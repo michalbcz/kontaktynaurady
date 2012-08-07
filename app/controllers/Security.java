@@ -10,7 +10,11 @@ package controllers;
 public class Security extends controllers.Secure.Security {
 	
 	static boolean authenticate(String username, String password) {
-		if ("master".equals(username) && "mojemamajekrasnaholka".equals(password)) {
+		
+		String adminLogin = System.getProperty("kontaktynaurady.admin.username");
+		String adminPassword = System.getProperty("kontaktynaurady.admin.password");
+		
+		if (adminLogin.equals(username) && adminPassword.equals(password)) {
 			return true;
 		}
 		
