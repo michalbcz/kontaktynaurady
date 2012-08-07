@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 
 import play.db.jpa.Model;
@@ -90,11 +91,7 @@ public class Organization extends Model {
 	
 	@Override
 	public String toString() {
-		if (StringUtils.isEmpty(name)) {
-			return super.toString();
-		} else {
-			return name;
-		}
+		return ToStringBuilder.reflectionToString(this);
 	}
 	
 }
