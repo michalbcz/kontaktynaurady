@@ -3,6 +3,8 @@
  */
 package jobs;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import models.Organization;
 import play.Logger;
 import play.db.jpa.JPA;
@@ -16,7 +18,7 @@ public class AbstractScraperJob extends Job {
 
 	protected void saveOrganization(Organization organization) {
 		
-		Logger.debug("Saving organization %s", organization);
+		Logger.debug("Saving organization %s", ToStringBuilder.reflectionToString(organization));
 		
 		Organization existingOrganization = Organization.find("byDataBoxId", organization.dataBoxId).first();
 		

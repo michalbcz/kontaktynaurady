@@ -91,7 +91,7 @@ public class Organization extends Model {
 	
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		return name;
 	}
 	
 }
