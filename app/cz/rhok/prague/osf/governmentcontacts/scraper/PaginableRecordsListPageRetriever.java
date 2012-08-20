@@ -62,6 +62,10 @@ public class PaginableRecordsListPageRetriever extends ScraperHelper {
 		private final Map<Long, URL> pages = Maps.newHashMap();
 		private final URL nextPaginable;
 
+		/**
+		 * @param pages
+		 * @param nextPaginable can be null
+		 */
 		public PaginableRecord(Map<Long, URL> pages, URL nextPaginable) {
 			this.pages.putAll(pages);
 			this.nextPaginable = nextPaginable;
@@ -70,12 +74,14 @@ public class PaginableRecordsListPageRetriever extends ScraperHelper {
 		public Map<Long, URL> getPages() {
 			return pages;
 		}
+		
+		/**
+		 * @return URL of link which leads to next page of paginable element (eg. table) or null if there is no
+		 *         "next" button (ie. it's last page or there is only one page at all)
+		 */
 		public URL getNextPaginable() {
 			return nextPaginable;
 		}
-
-
-
 
 	}
 

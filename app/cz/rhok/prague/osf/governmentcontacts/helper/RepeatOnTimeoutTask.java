@@ -7,7 +7,7 @@ import cz.rhok.prague.osf.governmentcontacts.scraper.UnableToConnectToServer;
 
 public abstract class RepeatOnTimeoutTask<V> implements Callable<V> {
 
-	private static final int WAIT_TIME_BETWEEN_REPETITION = 1000;
+	private static final int WAIT_TIME_BETWEEN_REPETITION = 1000 /* ms */;
 	private static final int MAX_NUMBER_OF_REPETITION = 5;
 
 

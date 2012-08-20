@@ -32,6 +32,8 @@ public class SeznamDatovychSchranekMunicipalityListPageScraper
 	 */
 	@Override
 	public List<URL> extractDetailPageUrlsFrom(String url) {
+		
+		log.debug("Scraping detail page links from kraj's detail page at " + url);
 
 		Document doc = getDocumentFor(url);
 
