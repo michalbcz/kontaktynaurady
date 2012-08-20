@@ -37,15 +37,26 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h1>Government Contacts API Help</h1>
+        <h1>Testing bed</h1>
       </div>
+      
+      %{
+        if (flash.message) {
+      }%
+      <div class="alert alert-success">
+         ${flash.message}
+      </div>
+      %{
+        }
+      }%
 
+      
       <div class="row">
         <div class="span12">
-          <h2>Formát dotazu / Request format</h2>
+          <h2>Scrape, save and show municipality page (eg. http://seznam.gov.cz/ovm/municipalityDetail.do?path=PodoliVs)</h2>
           <p>
-            #{form @TestBed.scrapeAndSaveSome()}
-                <input type="text" name="listPageUrl">
+            #{form @TestBed.scrapeDetailPage()}
+                <input type="text" name="urlOfDetailPage">
                 <input type="submit" value="OK">
             #{/form}
           </p>  
@@ -54,7 +65,6 @@
 
        <div class="row">
         <div class="span12">
-          <h2>Formát dotazu / Request format</h2>
           <p>
             #{form @TestBed.startScrapeJob()}
                 <input type="submit" value="Start scrape ">
@@ -62,7 +72,6 @@
           </p>  
         </div>
       </div>
-
        <div class="row">
         <div class="span12">
           <h2>Geocoding</h2>

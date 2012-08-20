@@ -24,6 +24,9 @@ GET     /admin/testbed/?                        TestBed.index
 POST    /admin/testbed/save/?                   TestBed.scrapeAndSaveSome
 POST    /admin/testbed/kraj_scrape              TestBed.startScrapeJob
 POST    /admin/testbed/geocoding                TestBed.startGeocodingJob
+POST    /admin/testbed/testJob                  TestBed.scrapeDetailPage
+
+# GET    /admin/organizations/show               Organizations.show
 
 # Import CRUD routes
 *      /admin                                   module:crud

@@ -10,6 +10,7 @@ import models.Organization;
 
 import org.apache.commons.lang.time.StopWatch;
 
+import play.db.jpa.JPABase;
 import play.mvc.Controller;
 import play.mvc.With;
 
@@ -24,61 +25,21 @@ public class TestBed extends Controller {
     public static void index() {
         render();
     }
-    
-    public static void scrapeAndSaveSome() {
+       
+    public static void scrapeDetailPage(String urlOfDetailPage) throws Exception {
     	
-    	String listPageUrl = params.get("listPageUrl");
+    	SeznamDatovychSchranekDetailPageScaper scraper = new SeznamDatovychSchranekDetailPageScaper();
+    	Organization scrapedOrganization = scraper.scrape(urlOfDetailPage);
+    	scrapedOrganization.save();
     	
-    	SeznamDatovychSchranekListPageScraper listPageScraper = 
-    									new SeznamDatovychSchranekListPageScraper();
-    	
-    	SeznamDatovychSchranekDetailPageScaper detailPageScaper = 
-    									new SeznamDatovychSchranekDetailPageScaper();
-    	
-    	List<URL> detailPageUrls = Lists.newArrayList();
-    	
-    	StopWatch watch = new StopWatch();
-    	
-    	watch.start();
-    	
-    	boolean repeatLoop = true;
-		while (repeatLoop) {
-			try {
-				detailPageUrls.addAll(listPageScraper.extractDetailPageUrlsFrom(listPageUrl));
-				Thread.sleep(1000 /* ms */); // pause before next request (to not spam the web page too much)
-				repeatLoop = false;
-			} catch (RuntimeException ex) {
-				if ( ! (ex.getCause() instanceof SocketTimeoutException)) {
-					repeatLoop = false;
-				}
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			}
-		}
-    	
-    	for (URL url : detailPageUrls) {
-    		Organization organization = detailPageScaper.scrape(url.toString());
-
-    		Organization existingOrganization = Organization.find("byDataBoxId", organization.dataBoxId).first();
-    		
-    		if (existingOrganization != null) {
-    			existingOrganization.copyStateFrom(organization);
-    			organization = existingOrganization;
-    		}
-    		
-    		organization.save();
-		}
-    	
-    	watch.stop();
-    	
-    	Long timeElapsed = watch.getTime();
-		renderText("Succesfully saved (in " + timeElapsed + " ms)");
-    
+    	redirect("Organizations.show", scrapedOrganization.id.toString());
     }
     
     public static void startScrapeJob() {
     	new KrajeScraperJob().now();
-    }
+    	flash.put("message", "scraping job started");
+    	index();
+    }    
 
     public static void startGeocodingJob() {
     	new GeocodingJob().now();
