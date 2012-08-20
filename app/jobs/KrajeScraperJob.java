@@ -8,6 +8,8 @@ import java.util.Map;
 
 import models.Organization;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -35,47 +37,19 @@ public class KrajeScraperJob extends AbstractScraperJob {
 	@Override
 	public void doJob() throws Exception {
 		
-		Logger.info("Scraping of municipalities started");
+		Logger.info("Scraping job (scraping of all the municipalities) started");
 		
 		StopWatch watches = new StopWatch();
 		watches.start();
 
-		final SeznamDatovychSchranekKrajeListPageScraper krajsListPageScraper = 
-				new SeznamDatovychSchranekKrajeListPageScraper();
-
-		RepeatOnTimeoutTask<List<URL>> repeatingExtractDetailPageForKrajsPage = new RepeatOnTimeoutTask<List<URL>>() {
-
-			@Override
-			public List<URL> doTask() {
-				return krajsListPageScraper.extractDetailPageUrlsFrom(KRAJS_LISTING_PAGE);
-			}
-
-		};
-		List<URL> krajDetailPageUrls = repeatingExtractDetailPageForKrajsPage.call();
-
-		for (URL krajDetailPageUrl : krajDetailPageUrls) {
-			// save kraj to db
-			// kraj is not saved to db because it's itself part of municipality list
-		}
+		List<URL> krajDetailPageUrls = getKrajDetailPageUrls();
 
 		List<URL> krajDetailPageWithMunicipalitiesListUrls = Lists.newArrayList();
 
+		Logger.debug("Converting municipality urls to detail's urls");
 		for (final URL krajDetailPageUrl : krajDetailPageUrls) {
 
-			RepeatOnTimeoutTask<Document> documentRetrieveTask = new RepeatOnTimeoutTask<Document>() {
-
-				@Override
-				public Document doTask() {
-					try {
-						return Jsoup.connect(krajDetailPageUrl.toExternalForm()).get();
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				}
-
-			};
-
-			Document document = documentRetrieveTask.call();
+			Document document = getDocumentFor(krajDetailPageUrl);
 
 			Element linkToDetailWithAllMunicipalities = document.select("a[href*=allMunicipality]").first();
 
@@ -86,9 +60,10 @@ public class KrajeScraperJob extends AbstractScraperJob {
 				try {
 					URL url = new URL(urlAsString);
 					krajDetailPageWithMunicipalitiesListUrls.add(url);
+					Logger.debug("Found municipality page %s", url.toExternalForm());
 				} catch (MalformedURLException e) {
 					Logger.error(
-							"Seems that url is malformed. Malformed url: %s When parsed document on: %s",
+							"Seems that municipality url is malformed. Malformed url: %s. When parsed document on: %s",
 							urlAsString, krajDetailPageUrl);
 				}
 			}
@@ -98,9 +73,12 @@ public class KrajeScraperJob extends AbstractScraperJob {
 
 		for (URL krajDetailUrl : krajDetailPageWithMunicipalitiesListUrls) {
 
+			Logger.info("Scraping url of municipality pages of kraj in kraj's detail page (%s)", krajDetailUrl);
+			
 			/* get all urls for list pages of municipalities */
 			Map<Long, URL> allPages = Maps.newHashMap();
 
+			Logger.debug("Getting all pages in paginable element (table)...");
 			URL nextPaginable = krajDetailUrl;
 			while(nextPaginable != null) {
 				final String url = nextPaginable.toExternalForm();
@@ -123,6 +101,7 @@ public class KrajeScraperJob extends AbstractScraperJob {
 
 			for(final URL municipalityListPage : allPages.values()) {
 
+				
 				RepeatOnTimeoutTask<List<URL>> municipalityListPageScraperTask = new RepeatOnTimeoutTask<List<URL>>() {
 
 					@Override
@@ -150,13 +129,34 @@ public class KrajeScraperJob extends AbstractScraperJob {
 
 					Organization organization = detailPageScrapeTask.call();
 
-					saveOrganization(organization);
+					try {
+						
+						if (!JPA.em().getTransaction().isActive()) {
+							JPA.em().getTransaction().begin();
+						}
+						
+						saveOrganization(organization);
+						
+//						JPA.em().flush();
+						
+						// save immediately (copy paste from stackoverflow - not sure why flush and clear are needed)
+						JPA.em().getTransaction().commit(); /* transaction#begin is implicitly called by play framework 
+															   before calling this job's #doJob method to ensure that jobs 
+															   are transactional (ie. when error happened everything 
+															   in job is rollbacked) */
+						
+						
+						
+					    
+					} catch (RuntimeException ex) {
+						Logger.error(
+								"Unable to save scraped organization (%s). Exception throwed: %s", 
+								ToStringBuilder.reflectionToString(organization), ExceptionUtils.getFullStackTrace(ex));
+						JPA.em().getTransaction().rollback();
+					}
+
+					JPA.em().clear(); // clear managed entities between two transactions
 					
-					// save immediately
-					JPA.em().getTransaction().commit();
-				    JPA.em().getTransaction().begin();
-				    JPA.em().flush();
-				    JPA.em().clear();
 
 				}
 
@@ -169,6 +169,46 @@ public class KrajeScraperJob extends AbstractScraperJob {
 		
 		Logger.info("Municipalities have been successfully scraped. It lasts %s ms", watches.getTime());
 
+	}
+
+	private Document getDocumentFor(final URL krajDetailPageUrl) throws Exception {
+		
+		RepeatOnTimeoutTask<Document> documentRetrieveTask = new RepeatOnTimeoutTask<Document>() {
+
+			@Override
+			public Document doTask() {
+				try {
+					return Jsoup.connect(krajDetailPageUrl.toExternalForm()).get();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+		};
+
+		Document document = documentRetrieveTask.call();
+		return document;
+	}
+
+	private List<URL> getKrajDetailPageUrls() {
+		final SeznamDatovychSchranekKrajeListPageScraper krajsListPageScraper = 
+				new SeznamDatovychSchranekKrajeListPageScraper();
+
+		RepeatOnTimeoutTask<List<URL>> repeatingExtractDetailPageForKrajsPage = new RepeatOnTimeoutTask<List<URL>>() {
+
+			@Override
+			public List<URL> doTask() {
+				return krajsListPageScraper.extractDetailPageUrlsFrom(KRAJS_LISTING_PAGE);
+			}
+
+		};
+		
+		try {
+			return repeatingExtractDetailPageForKrajsPage.call();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 
 
