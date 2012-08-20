@@ -9,6 +9,7 @@ import models.Address;
 import models.Organization;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,8 +20,10 @@ import com.google.common.collect.Maps;
 //TODO : michal pridat plneni dat pro e-podatelnu (email v v zalozce zakladni info neni vzdy vyplnen)
 public class SeznamDatovychSchranekDetailPageScaper {
 
-	private static final Pattern MAIL_REGEX_PATTERN = Pattern.compile("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", Pattern.CASE_INSENSITIVE);
 	private static Logger log = play.Logger.log4j; //org.apache.log4j.Logger.getLogger("another.logger");
+
+	private static final Pattern MAIL_REGEX_PATTERN = Pattern.compile("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", Pattern.CASE_INSENSITIVE);
+	private static final Pattern DATABOX_ID_PATTERN = Pattern.compile("\\b([0-9a-z]*).*\\b", Pattern.CASE_INSENSITIVE);
 	
 	/**
 	 * @param pageUrl page which contains information to be scraped 
@@ -29,7 +32,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 	 */
 	public Organization scrape(String pageUrl) {
 		
-		log.debug("Start scraping of: " + pageUrl);
+		log.debug("Start scraping data from municipality page: " + pageUrl);
 		
 		Long startTime = System.currentTimeMillis();
 		
@@ -57,9 +60,11 @@ public class SeznamDatovychSchranekDetailPageScaper {
 			String value;
 			if ("Adresa sídla".equals(label)) {
 				// replace <br/> tags with newline
-				value = dataRow.select("td").html();
+				value = dataRow.select("td").html(); // as this cause html escaping...				
+				value = org.apache.commons.lang.StringEscapeUtils.unescapeHtml(value); // ... we need to unescape it
 				value = value.replace("<br />", "\n");
 				value = value.replace("<br/>", "\n");
+				
 			} else {
 				value = dataRow.select("td").text();
 			}
@@ -72,7 +77,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 
 		Organization organization = new Organization();
 		
-		organization.dataBoxId = scrappedData.get("Identifikátor datové schránky");
+		organization.dataBoxId = parseDataboxIdentificationNumber(scrappedData.get("Identifikátor datové schránky"));
 		organization.name = scrappedData.get("Název");
 		organization.code = scrappedData.get("Kód organizace");
 		organization.taxId = scrappedData.get("DIČ");
@@ -93,6 +98,31 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		log.debug("Scraping of " + pageUrl + " succesfully done in " + timeElapsed + " ms");
 		
 		return organization;
+		
+	}
+
+	private String parseDataboxIdentificationNumber(String rawDataboxId) {
+		
+		String databoxId = "";
+				
+		if (rawDataboxId != null) {
+			
+			Matcher matcher = DATABOX_ID_PATTERN.matcher(rawDataboxId);
+			
+			if (matcher.find()) {
+				if(matcher.groupCount() < 1) {
+					log.error("Cannot parse databox identification number from: " + rawDataboxId);
+				}
+				else {
+					databoxId = matcher.group(1);
+				}
+			}
+			
+		} else {
+			log.error("Databox id is not filled, but it should be. Check parsing code or scaped page.");
+		}
+		
+		return databoxId;
 		
 	}
 
@@ -128,8 +158,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 			if (matcher.find()) {
 				email = matcher.group(0);
 			} else {			
-				log.warn("Unable to parse e-mail. Parsed text : " + rawEmailData);
-				//TODO: michal : log message doesn't contain context information (which input data causes this)
+				log.error("Unable to parse e-mail. Parsed text : " + rawEmailData);
 			}
 		}
 						
