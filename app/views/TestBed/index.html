@@ -43,17 +43,34 @@
       %{
         if (flash.message) {
       }%
-      <div class="alert alert-success">
-         ${flash.message}
-      </div>
+      
+          <div class="alert alert-${flash.type ?: 'success'}">
+             ${flash.message}
+          </div>
+          
       %{
         }
       }%
-
       
       <div class="row">
         <div class="span12">
-          <h2>Scrape, save and show municipality page (eg. http://seznam.gov.cz/ovm/municipalityDetail.do?path=PodoliVs)</h2>
+          <h2>Groovy console - eat as you can</h2>
+          <p>
+            #{form @TestBed.evaluateGroovyScript()}
+                <textarea name="script" cols="200" style="width: 1024px" rows="10">/* here be dragons .. err .. here write your uber cool groovy script */                
+                </textarea>
+                <br/>
+                <input type="submit" value="Evaluate or die!">
+            #{/form}
+          </p>  
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="span12">
+          <h2>Scrape, save and show municipality page</h2>
+          <i>eg. http://seznam.gov.cz/ovm/municipalityDetail.do?path=PodoliVs</i>
           <p>
             #{form @TestBed.scrapeDetailPage()}
                 <input type="text" name="urlOfDetailPage">
@@ -63,8 +80,9 @@
         </div>
       </div>
 
-       <div class="row">
+      <div class="row">
         <div class="span12">
+          <h2>Kontaktynaurady.cz crawler + scraper</h2>
           <p>
             #{form @TestBed.startScrapeJob()}
                 <input type="submit" value="Start scrape ">
@@ -72,9 +90,11 @@
           </p>  
         </div>
       </div>
+      
+      
        <div class="row">
         <div class="span12">
-          <h2>Geocoding</h2>
+          <h2>Geocoding - job which add latitude and longitude info to each organization</h2>
           <p>
             #{form @TestBed.startGeocodingJob()}
                 <input type="submit" value="Start geocoding">
