@@ -53,6 +53,11 @@ public class KrajeScraperJob extends AbstractScraperJob {
 
 			Element linkToDetailWithAllMunicipalities = document.select("a[href*=allMunicipality]").first();
 
+			if (linkToDetailWithAllMunicipalities == null) {
+				// maybe it's "Prague" which has other structure... there are no municipalities but neighbourhoods
+				linkToDetailWithAllMunicipalities = document.select("a[href*=urbanNeighbourhoods]").first();
+			}
+			
 			if (linkToDetailWithAllMunicipalities != null) {
 				String relativeStringUrl = linkToDetailWithAllMunicipalities.attr("href");
 				String dataBoxBaseUrl = "http://seznam.gov.cz/ovm/regionDetail.do";
