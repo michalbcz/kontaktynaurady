@@ -10,6 +10,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import cz.rhok.prague.osf.governmentcontacts.helper.RepeatOnTimeoutTask;
+import cz.rhok.prague.osf.governmentcontacts.scraper.ApiRequestLimitExceededException;
 import models.GeoLocation;
 import models.Organization;
 
@@ -18,6 +20,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.apache.log4j.Logger;
 
 /**
  * @author Vlastimil Dolejs (vlasta.dolejs@gmail.com)
@@ -25,38 +28,70 @@ import com.google.gson.reflect.TypeToken;
  */
 public class Geocoder {
 
-	public GeoLocation geocode(Organization organization) throws MalformedURLException, IOException {
-		StringBuilder requestUrl = new StringBuilder();
-		
-		requestUrl
-				.append("http://maps.googleapis.com/maps/api/geocode/json?address=")
-				.append(URLEncoder.encode(organization.getAddress(), "utf-8"))
-				.append("&sensor=false");
-				
-		
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		InputStream stream = new URL(requestUrl.toString()).openStream();
-		IOUtils.copy(stream, outputStream);
-		
-		String responseString = outputStream.toString();
-		
-		if (responseString.contains("ZERO_RESULTS")) {
-			// nothing found
-			return null;
-		}
-		
-		int index = responseString.indexOf("\"location\"");
-		int begin = responseString.indexOf("{", index);
-		int end = responseString.indexOf("}", index);
-		String latLngJson = responseString.substring(begin, end + 1);
-		Gson gson = new Gson();
-		Map<String, Double> jsonObject = gson.fromJson(latLngJson, new TypeToken<Map<String, Double>>() {}.getType());
-		
-		GeoLocation result = new GeoLocation();
-		result.lat = jsonObject.get("lat");
-		result.lng = jsonObject.get("lng");
-		
-		return result;
+    private static Logger log = play.Logger.log4j;
+
+	public GeoLocation geocode(final Organization organization) {
+
+        RepeatOnTimeoutTask<GeoLocation> repeatableTask = new RepeatOnTimeoutTask<GeoLocation>() {
+
+            @Override
+            public GeoLocation doTask() {
+                return doGeoLocation(organization);
+            }
+
+        };
+
+        return repeatableTask.call();
+
 	}
+
+    private GeoLocation doGeoLocation(Organization organization) {
+
+        if (organization == null) {
+            throw new IllegalArgumentException("Organization cannot be null");
+        }
+
+        try {
+
+            log.debug("Geo coding organization: " + organization);
+
+            StringBuilder requestUrl = new StringBuilder();
+
+            requestUrl
+                    .append("http://maps.googleapis.com/maps/api/geocode/json?address=")
+                    .append(URLEncoder.encode(organization.getAddress(), "utf-8"))
+                    .append("&sensor=false");
+
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            InputStream stream = new URL(requestUrl.toString()).openStream();
+            IOUtils.copy(stream, outputStream);
+
+            String responseString = outputStream.toString();
+
+            if (responseString.contains("ZERO_RESULTS")) {
+                log.warn("Cannot geocode organization: " + organization.name +
+                         " (id: " + organization.id + ") with address: " + organization.getAddress());
+                return null;
+            } else if (responseString.contains("OVER_QUERY_LIMIT")) {
+                throw new ApiRequestLimitExceededException();
+            }
+
+            int index = responseString.indexOf("\"location\"");
+            int begin = responseString.indexOf("{", index);
+            int end = responseString.indexOf("}", index);
+            String latLngJson = responseString.substring(begin, end + 1);
+            Gson gson = new Gson();
+            Map<String, Double> jsonObject = gson.fromJson(latLngJson, new TypeToken<Map<String, Double>>() {}.getType());
+
+            GeoLocation result = new GeoLocation();
+            result.lat = jsonObject.get("lat");
+            result.lng = jsonObject.get("lng");
+
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
