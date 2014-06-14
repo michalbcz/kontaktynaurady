@@ -9,7 +9,6 @@ import models.Address;
 import models.Organization;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -35,7 +34,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		log.debug("Start scraping data from municipality page: " + pageUrl);
 		
 		Long startTime = System.currentTimeMillis();
-		
+			
 		Document doc = null;
 		try {
 			doc = Jsoup.connect(pageUrl).get();
@@ -88,6 +87,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		organization.type = scrappedData.get("Typ instituce");
 		organization.officeHours = scrappedData.get("Úřední hodiny");
 		organization.www = scrappedData.get("WWW");
+        organization.urlOfSource = pageUrl;
 		
 		Address address = parseAddress(scrappedData);
 		organization.addressStreet = address.street;

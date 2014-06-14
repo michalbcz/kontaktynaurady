@@ -64,6 +64,13 @@ public class Organization extends Model {
 
 	public Double latitude;
 	public Double longitude;
+
+    /**
+     * url of page where we scraped all organization's informations
+     */
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    public String urlOfSource;
 	
 	public void copyStateFrom(Organization organization) {
 		this.name = organization.name;
@@ -83,6 +90,7 @@ public class Organization extends Model {
 		this.dataBoxId = organization.dataBoxId;
 		this.latitude = organization.latitude;
 		this.longitude = organization.longitude;
+        this.urlOfSource = organization.urlOfSource;
 	}
 	
 	public String getAddress() {

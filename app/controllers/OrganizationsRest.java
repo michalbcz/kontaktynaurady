@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.gson.Gson;
 import models.Organization;
 
 import org.apache.commons.lang.StringUtils;
@@ -56,14 +57,15 @@ public class OrganizationsRest extends Controller {
 		} else {
 			organizations = Organization.find(queryFindBy, queryParams.toArray()).fetch();
 		}
-		
-		if (organizations.isEmpty()) {
-			// nothing found
-		} else if (organizations.size() == 1) {
-			renderJSON(organizations.get(0));
-		} else {
-			renderJSON(organizations);
-		}
+
+        if (queryParams.contains("callback")) {
+            Gson gson = new Gson();
+            String out = gson.toJson(organizations);
+            renderText(request.params.get("callback") + "(" + out + ")");
+        } else {
+            renderJSON(organizations);
+        }
+
 	}
 	
 	public static void help() {

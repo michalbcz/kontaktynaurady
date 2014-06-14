@@ -3,6 +3,7 @@ package cz.rhok.prague.osf.governmentcontacts.helper;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.Callable;
 
+import cz.rhok.prague.osf.governmentcontacts.scraper.CanBeRepeatedException;
 import cz.rhok.prague.osf.governmentcontacts.scraper.UnableToConnectToServer;
 
 public abstract class RepeatOnTimeoutTask<V> implements Callable<V> {
@@ -12,7 +13,7 @@ public abstract class RepeatOnTimeoutTask<V> implements Callable<V> {
 
 
 	@Override
-	public V call() throws Exception {
+	public V call() {
 
 		int repetitionCount = 0;
 
@@ -21,8 +22,12 @@ public abstract class RepeatOnTimeoutTask<V> implements Callable<V> {
 				
 				if (repetitionCount > 0) {
 					/* just wait, timeout can be caused by detection of automatization (too fast) or server is overloaded  */
-					Thread.sleep(WAIT_TIME_BETWEEN_REPETITION); 
-				}
+                    try {
+                        Thread.sleep(WAIT_TIME_BETWEEN_REPETITION);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
 				
 				return doTask();
 			} catch (UnableToConnectToServer utce) {
@@ -31,6 +36,10 @@ public abstract class RepeatOnTimeoutTask<V> implements Callable<V> {
 				if (re.getCause() instanceof SocketTimeoutException) {
 					repetitionCount++;
 				}
+                else if(re.getCause() instanceof CanBeRepeatedException
+                          || re instanceof CanBeRepeatedException) {
+                    repetitionCount++;
+                }
 				else {
 					throw re;
 				}
