@@ -65,7 +65,7 @@ public class Geocoder {
 
             String apiKey = Play.configuration.getProperty("google.geocoder.api.key");
             if (StringUtils.isNotBlank(apiKey)) {
-                requestUrl.append("key=").append(apiKey);
+                requestUrl.append("&key=").append(apiKey);
             }
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
