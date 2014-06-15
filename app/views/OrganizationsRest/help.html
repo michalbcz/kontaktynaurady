@@ -49,9 +49,8 @@
            <p>Je možné používat <b>zástupný znak *</b> pro 0-n libovolných znaků.</p>
            
            <p><b>Příklady:</b></p>
-           <p><a href="/api/v1/organizations?code=FUCaslavi"><code>/api/v1/organizations?code=FUCaslavi</code></a>&nbsp;&nbsp;&nbsp;Nalezne organizaci s kódem "FUCaslavi"</p>
-           <p><a href="/api/v1/organizations?name=Praha*"><code>/api/v1/organizations?name=Praha*</code></a>&nbsp;&nbsp;&nbsp;Nalezne organizace s názvem začínajícím slovem "Praha" (např. Praha 1, Praha 2, ..)</p>
-           <p><a href="/api/v1/organizations?name=Praha*&type=Orgán%20státní%20správy"><code>/api/v1/organizations?name=Praha*&type=Orgán státní správy</code></a>&nbsp;&nbsp;&nbsp;Nalezne všechny orgány státní správy s názvem začínajícím slovem "Praha"</p>
+           <p><a href="/api/v1/organizations?name=*Praha*"><code>/api/v1/organizations?name=*Praha*</code></a>&nbsp;&nbsp;&nbsp;Nalezne organizace s názvem začínajícím slovem "Praha" (např. Praha 1, Praha 2, ..)</p>
+           <p><a href="/api/v1/organizations?code=BRECLAV"><code>/api/v1/organizations?code=BRECLAV</code></a>&nbsp;&nbsp;&nbsp;Nalezne všechny orgány státní správy s názvem začínajícím slovem "Praha"</p>
            <p><b>Poznámka:</b> parametry URL requestů je potřeba escapovat viz <a href="http://en.wikipedia.org/wiki/Percent-encoding">Percent encoding</a></p>
         </div>
       </div>
@@ -149,12 +148,18 @@
 				  <td>Identifikátor datové schránky</td>
 				</tr>
                 <tr>
-                  <td>latitude</td>
-                  <td>Zeměpisná šířka (podle adresy organizace)</td>
+                  <td>radiusAroundLatitude</td>
+                  <td>Zeměpisná šířka (latitude) bodu, okolo kterého chceme hledat daný úřad. Např. 49.0815275.</td>
                 </tr>
                 <tr>
-                  <td>longitude</td>
-                  <td>Zeměpisná výška (podle adresy organizace)</td>
+                  <td>radiusAroundLongitude</td>
+                  <td>Zeměpisná šířka (longitude) bodu, okolo kterého chceme hledat daný úřad. Např. např. 12.022</td>
+                </tr>
+                <tr>
+                  <td>radius</td>
+                  <td>Poloměr kruhu v metrech, kolem souřadnic vyjádřených <b>radiusAroundLatitude</b> respektive
+                      <b>radiusAroundLongitude</b>. Úřady se omezí jen na ty, které polohou spadají do této kružnice.
+                  </td>
                 </tr>
 	        </tbody>  
 	      </table>           
