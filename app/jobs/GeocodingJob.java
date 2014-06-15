@@ -32,6 +32,7 @@ public class GeocodingJob extends Job {
 			List<Organization> organizations = Organization.find("byLatitudeIsNull").fetch(page, 100);
 			
 			if (organizations.isEmpty()) {
+                log.info("Geocoding is over. There is no more organizations to geo code its address.");
 				break;
 			}
 			
@@ -42,11 +43,14 @@ public class GeocodingJob extends Job {
 					if (geoLocation != null) {
 						organization.latitude = geoLocation.lat;
 						organization.longitude = geoLocation.lng;
-						
+
+                        if (!JPA.em().getTransaction().isActive()) {
+                            JPA.em().getTransaction().begin();
+                        }
+
 						organization.save();
-						
-						// save immediately
-						JPA.em().flush();
+
+                        JPA.em().getTransaction().commit();
 					}
 				} catch (Throwable e) {
 					log.warn("Failed to geocode organization address: " + organization.getAddress(), e);

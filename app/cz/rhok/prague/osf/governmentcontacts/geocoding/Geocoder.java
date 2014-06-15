@@ -20,7 +20,9 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import play.Play;
 
 /**
  * @author Vlastimil Dolejs (vlasta.dolejs@gmail.com)
@@ -58,10 +60,13 @@ public class Geocoder {
             StringBuilder requestUrl = new StringBuilder();
 
             requestUrl
-                    .append("http://maps.googleapis.com/maps/api/geocode/json?address=")
-                    .append(URLEncoder.encode(organization.getAddress(), "utf-8"))
-                    .append("&sensor=false");
+                    .append("https://maps.googleapis.com/maps/api/geocode/json?address=")
+                    .append(URLEncoder.encode(organization.getAddress(), "utf-8"));
 
+            String apiKey = Play.configuration.getProperty("google.geocoder.api.key");
+            if (StringUtils.isNotBlank(apiKey)) {
+                requestUrl.append("key=").append(apiKey);
+            }
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             InputStream stream = new URL(requestUrl.toString()).openStream();
