@@ -5,7 +5,7 @@ $.ajax({
     success: function(data) {
     	var container = $('<div></div>')
     	$.each(data, function(index, value) {
-    		container.append($('<div>' + value + '</div>'));
+    		container.append($('<div>' + value.name + '</div>'));
     	});
     	
     	$('#container').html(container);
