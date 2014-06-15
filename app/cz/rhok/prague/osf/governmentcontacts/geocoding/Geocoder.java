@@ -69,6 +69,10 @@ public class Geocoder {
 
             String responseString = outputStream.toString();
 
+            if ( ! responseString.contains("OK")) {
+                log.debug("Response indicating that there is some problem. Response: " + responseString);
+            }
+
             if (responseString.contains("ZERO_RESULTS")) {
                 log.warn("Cannot geocode organization: " + organization.name +
                          " (id: " + organization.id + ") with address: " + organization.getAddress());
