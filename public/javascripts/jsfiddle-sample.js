@@ -1,5 +1,5 @@
 $.ajax({
-    url: 'http://kontaktynauradyapi-databox.rhcloud.com/api/v1/organizations?name=*Praha*',
+    url: 'http://api.kontaktynaurady.cz/api/v1/organizations?name=*Praha*',
     type: 'GET',
     dataType: 'jsonp',
     success: function(data) {
