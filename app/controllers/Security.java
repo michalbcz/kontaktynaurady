@@ -3,6 +3,7 @@
  */
 package controllers;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import play.Play;
@@ -20,20 +21,20 @@ public class Security extends controllers.Secure.Security {
 		String adminLogin = Play.configuration.getProperty("kontaktynaurady.admin.username");
 		String adminPassword = Play.configuration.getProperty("kontaktynaurady.admin.password");
 
-		if (adminLogin == null) {
+		if (StringUtils.isEmpty(adminLogin)) {
 			adminLogin = System.getProperty("kontaktynaurady.admin.username");
 		}
 
-		if (adminPassword == null) {
+		if (StringUtils.isEmpty(adminPassword)) {
 			adminPassword = System.getProperty("kontaktynaurady.admin.password");
 		}
 
-		if (adminLogin == null) {
+		if (StringUtils.isEmpty(adminLogin)) {
 			log.warn("System property 'kontaktynaurady.admin.username' is not set");
 			return false;
 		}
 
-		if (adminPassword == null) {
+		if (StringUtils.isEmpty(adminPassword)) {
 			log.warn("System property 'kontaktynaurady.admin.password' is not set");
 			return false;
 		}
