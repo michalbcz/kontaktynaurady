@@ -1,14 +1,15 @@
 /**
- * 
+ *
  */
 package controllers;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import com.google.common.base.Joiner;
-import com.google.gson.Gson;
+import javax.persistence.Query;
+
 import models.Organization;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,9 +17,10 @@ import org.apache.commons.lang.StringUtils;
 import play.db.jpa.JPA;
 import play.mvc.Controller;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-
-import javax.persistence.Query;
+import com.google.common.collect.Sets;
+import com.google.gson.Gson;
 
 /**
  * @author Vlastimil Dolejs (vlasta.dolejs@gmail.com)
@@ -26,14 +28,33 @@ import javax.persistence.Query;
  */
 public class OrganizationsRest extends Controller {
 
+	private static final Set<String> ORGANIZATION_FIELDS = Sets.newHashSet(
+																	"name",
+																	"addressstreet",
+																	"addresscity",
+																	"addresszipcode",
+																	"eregistry",
+																	"organizationid",
+																	"taxid",
+																	"bankaccount",
+																	"code",
+																	"type",
+																	"www",
+																	"email",
+																	"phone",
+																	"officehours",
+																	"databoxid",
+																	"latitude",
+																	"longitude");
+
 	public static void organizations() {
 		Map<String, String> parameters = params.allSimple();
 		parameters.remove("body"); // hack - play puts empty body parameter to each request???
-		
+
 		if (parameters.isEmpty()) {
 			render("OrganizationsRest/help.html");
 		}
-		
+
 		String queryFindBy = "";
 		List<String> queryParams = Lists.newArrayList();
 
@@ -43,25 +64,24 @@ public class OrganizationsRest extends Controller {
 			fieldName = StringUtils.lowerCase(fieldName);
 			fieldName = StringUtils.capitalize(fieldName);
 
-            if (StringUtils.containsIgnoreCase(fieldName, "radius")
-                    || StringUtils.containsIgnoreCase(fieldName, "callback")) {
+			if (!ORGANIZATION_FIELDS.contains(StringUtils.lowerCase(fieldName))) {
                 // skip as it's not Organization's field name
                 continue;
-            }
+			}
 
 			String value = entry.getValue();
 			value = value.replace("*", "%");
-			
+
 			if (StringUtils.isEmpty(queryFindBy)) {
 				queryFindBy = "by";
 			} else {
 				queryFindBy += "And";
 			}
-			
+
 			queryFindBy += fieldName + "Ilike";
 			queryParams.add(value);
 		}
-		
+
 		List<Organization> organizations;
 		if (StringUtils.isEmpty(queryFindBy)) {
 			organizations = Organization.all().fetch();
@@ -104,7 +124,7 @@ public class OrganizationsRest extends Controller {
         }
 
 	}
-	
+
 	public static void help() {
 		render();
 	}
