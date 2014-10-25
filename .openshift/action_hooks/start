@@ -45,7 +45,7 @@ fi
 
 export PLAY_LOG_PATH=${OPENSHIFT_LOG_DIR}
 echo "$PLAY_COMMAND start --%$ID $PLAY_PARAMS"
-nohup bash -c "$PLAY_COMMAND start --%$ID $PLAY_PARAMS >>$LOG_FILE 2>&1" &> /dev/null &
+nohup bash -c "$PLAY_COMMAND start --%$ID $PLAY_PARAMS -DopenshiftLogDir=$OPENSHIFT_LOG_DIR >>$LOG_FILE 2>&1" &> /dev/null &
 
 if [[ ! $? -eq 0 ]]; then
 	echo "Error: starting play application"
