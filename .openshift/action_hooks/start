@@ -13,6 +13,8 @@ if [[ ! $? -eq 0 ]]; then
 	exit $?
 fi
 
+exec &> >(tee $LOG_FILE)
+
 if [[ ! -f $PLAY_COMMAND ]]; then
 	echo "Error: couldn't find play executable at $PLAY_COMMAND"
 	exit 1
@@ -29,11 +31,11 @@ fi
 cd "$OPENSHIFT_REPO_DIR"
 
 # clean everything
-echo "$PLAY_COMMAND clean" >> $LOG_FILE
-$PLAY_COMMAND clean &> $LOG_FILE
+echo "$PLAY_COMMAND clean"
+$PLAY_COMMAND clean >>$LOG_FILE 2>&1
 
-echo "$PLAY_COMMAND deps $DEPS_PARAMS -Divy.home=${OPENSHIFT_TMP_DIR}ivy2/" >> $LOG_FILE
-$PLAY_COMMAND deps $DEPS_PARAMS -Divy.home=${OPENSHIFT_TMP_DIR}ivy2/ &> $LOG_FILE
+echo "$PLAY_COMMAND deps $DEPS_PARAMS -Divy.home=${OPENSHIFT_TMP_DIR}ivy2/"
+$PLAY_COMMAND deps $DEPS_PARAMS -Divy.home=${OPENSHIFT_TMP_DIR}ivy2/ >>$LOG_FILE 2>&1
 
 if [[ ! $? -eq 0 ]]; then
 	echo "Error: could not update dependencies"
@@ -42,8 +44,8 @@ if [[ ! $? -eq 0 ]]; then
 fi
 
 export PLAY_LOG_PATH=${OPENSHIFT_LOG_DIR}
-echo "$PLAY_COMMAND start --%$ID $PLAY_PARAMS" >> $LOG_FILE
-nohup bash -c "$PLAY_COMMAND start --%$ID $PLAY_PARAMS &> $LOG_FILE" &> /dev/null &
+echo "$PLAY_COMMAND start --%$ID $PLAY_PARAMS"
+nohup bash -c "$PLAY_COMMAND start --%$ID $PLAY_PARAMS >>$LOG_FILE 2>&1" &> /dev/null &
 
 if [[ ! $? -eq 0 ]]; then
 	echo "Error: starting play application"
