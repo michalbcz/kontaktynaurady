@@ -1,7 +1,9 @@
 package cz.rhok.prague.osf.governmentcontacts.helper;
 
+import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import cz.rhok.prague.osf.governmentcontacts.scraper.CanBeRepeatedException;
 import cz.rhok.prague.osf.governmentcontacts.scraper.UnableToConnectToServer;
@@ -15,12 +17,12 @@ public abstract class RepeatOnTimeoutTask<V> implements Callable<V> {
 	@Override
 	public V call() {
 
-		int repetitionCount = 0;
+		AtomicInteger repetitionCount = new AtomicInteger();
 
-		while(repetitionCount <= MAX_NUMBER_OF_REPETITION) {
+		while(repetitionCount.get() <= MAX_NUMBER_OF_REPETITION) {
 			try {
 				
-				if (repetitionCount > 0) {
+				if (repetitionCount.get() > 0) {
 					/* just wait, timeout can be caused by detection of automatization (too fast) or server is overloaded  */
                     try {
                         Thread.sleep(WAIT_TIME_BETWEEN_REPETITION);
@@ -30,26 +32,34 @@ public abstract class RepeatOnTimeoutTask<V> implements Callable<V> {
                 }
 				
 				return doTask();
-			} catch (UnableToConnectToServer utce) {
-				repetitionCount++;
-			} catch (RuntimeException re) {
-				if (re.getCause() instanceof SocketTimeoutException) {
-					repetitionCount++;
-				}
-                else if(re.getCause() instanceof CanBeRepeatedException
-                          || re instanceof CanBeRepeatedException) {
-                    repetitionCount++;
-                }
-				else {
-					throw re;
+				
+			} catch (RuntimeException e) {
+				if (canBeRepeated(e) || canBeRepeated(e.getCause())) {
+					repeatOrRethrow(repetitionCount, e);
+                } else {
+					throw e;
 				}
 			}
 		}
 		
+		// this line should not be reached
 		throw new RuntimeException("Operation failed");
-
 	}
 
+	private boolean canBeRepeated(Throwable e) {
+		return 
+			e instanceof SocketTimeoutException || 
+			e instanceof NoRouteToHostException || 
+			e instanceof CanBeRepeatedException;
+	}
+	
+	private void repeatOrRethrow(AtomicInteger repetitionCount, RuntimeException e) {
+		if (repetitionCount.get() < MAX_NUMBER_OF_REPETITION) {
+			repetitionCount.incrementAndGet();
+		} else {
+			throw e;
+		}
+	}
 
 	public abstract V doTask();
 

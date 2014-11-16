@@ -39,7 +39,6 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		try {
 			doc = Jsoup.connect(pageUrl).get();
 		} catch (IOException ex) {
-			log.error("Unable to parse: " + pageUrl, ex);
 			throw new RuntimeException("Unable to parse: " + pageUrl, ex);
 		}
 

@@ -13,10 +13,6 @@ public class ScraperHelper {
 	
 	private static String DATA_BOXES_BASE_URL = "http://seznam.gov.cz/ovm/";
 	
-	private static final Logger log = play.Logger.log4j; 
-
-	
-	
 	/**
 	 * @param url 
 	 * @return 
@@ -34,13 +30,10 @@ public class ScraperHelper {
 				throw new UnableToConnectToServer("Unable to connect to: " + url, ex);
 			}
 			
-			log.error("Unable to parse: " + url, ex);
 			throw new RuntimeException("Unable to parse: " + url, ex);
 		}
 		
 	}
-
-
 
 	protected Document getDocumentFor(String url) {
 		try {
@@ -53,7 +46,5 @@ public class ScraperHelper {
 	public String getDataBoxBaseUrl() {
 		return DATA_BOXES_BASE_URL;
 	}
-
-	
 
 }
