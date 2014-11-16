@@ -1,13 +1,16 @@
 package cz.rhok.prague.osf.governmentcontacts.scraper;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import models.Address;
 import models.Organization;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -97,16 +100,42 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		
 		long timeElapsed = endTime - startTime;
 		log.debug("Scraping of " + pageUrl + " succesfully done in " + timeElapsed + " ms");
+
+		logMissingFields(organization, logMessageContext);
 		
 		return organization;
 		
 	}
 
+	private void logMissingFields(Organization organization, String logMessageContext) {
+		Set<String> missingFields = new HashSet<String>();
+		
+		if (StringUtils.isEmpty(organization.name)) {
+			missingFields.add("name");
+		}
+		
+		if (StringUtils.isEmpty(organization.dataBoxId)) {
+			missingFields.add("dataBoxId");
+		}
+		
+		if (StringUtils.isEmpty(organization.addressStreet)) {
+			missingFields.add("addressStreet");
+		}
+		
+		if (StringUtils.isEmpty(organization.addressCity)) {
+			missingFields.add("addressCity");
+		}
+		
+		if (!missingFields.isEmpty()) {
+			log.warn("Organization is missing required fields: " + StringUtils.join(missingFields, ", ") + " " + logMessageContext);
+		}
+	}
+	
 	private String parseDataboxIdentificationNumber(String rawDataboxId, String logMessageContext) {
 		
 		String databoxId = "";
 				
-		if (rawDataboxId != null) {
+		if (StringUtils.isNotEmpty(rawDataboxId)) {
 			
 			Matcher matcher = DATABOX_ID_PATTERN.matcher(rawDataboxId);
 			
@@ -119,8 +148,6 @@ public class SeznamDatovychSchranekDetailPageScaper {
 				}
 			}
 			
-		} else {
-			log.error("Databox id is not filled, but it should be. Check parsing code or scraped page. " + logMessageContext);
 		}
 		
 		return databoxId;
