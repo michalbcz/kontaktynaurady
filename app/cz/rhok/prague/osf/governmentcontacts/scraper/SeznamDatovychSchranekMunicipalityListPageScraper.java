@@ -37,7 +37,7 @@ public class SeznamDatovychSchranekMunicipalityListPageScraper
 
 		Document doc = getDocumentFor(url);
 
-		Elements anchors = doc.select(".content li a");
+		Elements anchors = doc.select(".content .col li a");
 		
 		List<URL> detailPagesUrl = Lists.newArrayList();
 		
