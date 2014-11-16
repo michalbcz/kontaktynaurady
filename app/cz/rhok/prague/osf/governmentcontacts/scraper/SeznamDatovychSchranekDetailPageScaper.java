@@ -74,14 +74,16 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		
 		Long endTime = System.currentTimeMillis();
 
+		String logMessageContext = "(" + pageUrl + ")";
+		
 		Organization organization = new Organization();
 		
-		organization.dataBoxId = parseDataboxIdentificationNumber(scrappedData.get("Identifikátor datové schránky"));
+		organization.dataBoxId = parseDataboxIdentificationNumber(scrappedData.get("Identifikátor datové schránky"), logMessageContext);
 		organization.name = scrappedData.get("Název");
 		organization.code = scrappedData.get("Kód organizace");
 		organization.taxId = scrappedData.get("DIČ");
 		organization.organizationId = scrappedData.get("IČ");
-		organization.email = parseEmail(scrappedData);
+		organization.email = parseEmail(scrappedData, logMessageContext);
 		organization.phone = scrappedData.get("Telefon");
 		organization.bankAccount = scrappedData.get("Bankovní spojení");
 		organization.type = scrappedData.get("Typ instituce");
@@ -89,7 +91,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		organization.www = scrappedData.get("WWW");
         organization.urlOfSource = pageUrl;
 		
-		Address address = parseAddress(scrappedData);
+		Address address = parseAddress(scrappedData, logMessageContext);
 		organization.addressStreet = address.street;
 		organization.addressCity = address.city;
 		organization.addressZipCode = address.zipCode;
@@ -101,7 +103,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		
 	}
 
-	private String parseDataboxIdentificationNumber(String rawDataboxId) {
+	private String parseDataboxIdentificationNumber(String rawDataboxId, String logMessageContext) {
 		
 		String databoxId = "";
 				
@@ -111,7 +113,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 			
 			if (matcher.find()) {
 				if(matcher.groupCount() < 1) {
-					log.error("Cannot parse databox identification number from: " + rawDataboxId);
+					log.error("Cannot parse databox identification number from: " + rawDataboxId + " " + logMessageContext);
 				}
 				else {
 					databoxId = matcher.group(1);
@@ -119,14 +121,14 @@ public class SeznamDatovychSchranekDetailPageScaper {
 			}
 			
 		} else {
-			log.error("Databox id is not filled, but it should be. Check parsing code or scaped page.");
+			log.error("Databox id is not filled, but it should be. Check parsing code or scraped page. " + logMessageContext);
 		}
 		
 		return databoxId;
 		
 	}
 
-	private Address parseAddress(Map<String, String> scrappedData) {
+	private Address parseAddress(Map<String, String> scrappedData, String logMessageContext) {
 		String addressText = scrappedData.get("Adresa sídla");
 		
 		Address address = new Address();
@@ -140,14 +142,14 @@ public class SeznamDatovychSchranekDetailPageScaper {
 				address.zipCode = lines[2].trim();
 			} else {
 				address.street = addressText;
-				log.warn("Unknown address format: " + addressText);
+				log.warn("Unknown address format: " + addressText + " " + logMessageContext);
 			}
 		}
 		
 		return address;
 	}
 	
-	private String parseEmail(Map<String, String> scrappedData) {
+	private String parseEmail(Map<String, String> scrappedData, String logMessageContext) {
 		String rawEmailData = scrappedData.get("E-mail"); // eg. posta@cityofprague.cz (podatelna)
 
 		// extract only mail part from string if there are something else
@@ -158,7 +160,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 			if (matcher.find()) {
 				email = matcher.group(0);
 			} else {			
-				log.error("Unable to parse e-mail. Parsed text : " + rawEmailData);
+				log.error("Unable to parse e-mail. Parsed text : " + rawEmailData + " " + logMessageContext);
 			}
 		}
 						
