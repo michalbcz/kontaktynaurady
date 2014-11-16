@@ -34,7 +34,7 @@ if [[ -f "$OPENSHIFT_REPO_DIR/server.pid" ]]; then
 	#manually remove server.pid if it's there
 	removePidFile
 else
-	echo "server.pid not found in directory $(pwd)"
+	echo "pid file $OPENSHIFT_REPO_DIR/server.pid was not found"
 fi
 
 #it survived, try to kill it manually
