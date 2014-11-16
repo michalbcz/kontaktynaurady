@@ -13,6 +13,13 @@ fi
 
 exec &> >(tee $LOG_FILE)
 
+function removePidFile {
+	if [[ -f "server.pid" ]]; then
+		echo "Manually removing server.pid file"
+		bash -c "rm server.pid >>$LOG_FILE 2>&1" &> /dev/null
+	fi
+}
+
 #kill play if it was running
 if [[ -f "server.pid" ]]; then
 
@@ -25,10 +32,9 @@ if [[ -f "server.pid" ]]; then
 	bash -c "$PLAY_COMMAND stop >>$LOG_FILE 2>&1" &> /dev/null
 
 	#manually remove server.pid if it's there
-	if [[ -f "server.pid" ]]; then
-		echo "Manually removing server.pid file"
-		bash -c "rm server.pid >>$LOG_FILE 2>&1" &> /dev/null
-	fi
+	removePidFile
+else
+	echo "server.pid not found in directory " + $(pwd)
 fi
 
 #it survived, try to kill it manually
@@ -41,6 +47,9 @@ if [[ -n `ps -A | grep ' java$'` ]]; then
 		sleep $c
 		#killed it
 		if [[ -z `ps -A | grep ' java$'` ]]; then
+			#manually remove server.pid if it's there
+			removePidFile
+			
 			exit 0
 		fi
 	done
@@ -52,6 +61,9 @@ if [[ -n `ps -A | grep ' java$'` ]]; then
 		sleep $c
 		#killed it
 		if [[ -z `ps -A | grep ' java$'` ]]; then
+			#manually remove server.pid if it's there
+			removePidFile
+			
 			exit 0
 		fi
 	done
