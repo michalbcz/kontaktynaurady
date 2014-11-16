@@ -14,14 +14,14 @@ fi
 exec &> >(tee $LOG_FILE)
 
 function removePidFile {
-	if [[ -f "server.pid" ]]; then
-		echo "Manually removing server.pid file"
-		bash -c "rm server.pid >>$LOG_FILE 2>&1" &> /dev/null
+	if [[ -f "$OPENSHIFT_REPO_DIR/server.pid" ]]; then
+		echo "Manually removing $OPENSHIFT_REPO_DIR/server.pid file"
+		bash -c "rm $OPENSHIFT_REPO_DIR/server.pid >>$LOG_FILE 2>&1" &> /dev/null
 	fi
 }
 
 #kill play if it was running
-if [[ -f "server.pid" ]]; then
+if [[ -f "$OPENSHIFT_REPO_DIR/server.pid" ]]; then
 
 	if [[ ! -f $PLAY_COMMAND ]]; then
 		echo "Error: couldn't find play executable at $PLAY_COMMAND"
@@ -34,7 +34,7 @@ if [[ -f "server.pid" ]]; then
 	#manually remove server.pid if it's there
 	removePidFile
 else
-	echo "server.pid not found in directory " + $(pwd)
+	echo "server.pid not found in directory $(pwd)"
 fi
 
 #it survived, try to kill it manually
