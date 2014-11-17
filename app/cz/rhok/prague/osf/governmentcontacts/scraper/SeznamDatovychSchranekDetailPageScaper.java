@@ -65,7 +65,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 				value = org.apache.commons.lang.StringEscapeUtils.unescapeHtml(value); // ... we need to unescape it
 				value = value.replace("<br />", "\n");
 				value = value.replace("<br/>", "\n");
-				
+				value = value.replaceAll("<span class=\"incompleteAddress\">.*</span>", "");
 			} else {
 				value = dataRow.select("td").text();
 			}
@@ -162,11 +162,22 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		if (addressText != null) {
 			String[] lines = addressText.split("\n");
 			
-			if (lines.length == 3) {
-				address.street = lines[0].trim();
-				address.city = lines[1].trim();
-				address.zipCode = lines[2].trim();
-			} else {
+			boolean validAddress = false;
+			
+			if (lines.length == 3 && lines[2].trim().isEmpty()) {
+				String zipAndCity = lines[1].trim();
+				int firstSpace = zipAndCity.indexOf(" ");
+				
+				if (firstSpace > 0) {
+					address.street = lines[0].trim();
+					address.zipCode = zipAndCity.substring(0, firstSpace).trim();
+					address.city = zipAndCity.substring(firstSpace).trim();
+
+					validAddress = true;
+				}
+			} 
+			
+			if (!validAddress) {
 				address.street = addressText;
 				log.warn("Unknown address format: " + addressText + " " + logMessageContext);
 			}
