@@ -29,3 +29,7 @@ Technologie
 - JSoup (http://jsoup.org/) pro dolovani dat z webovych stranek registru datovych schranek 
 (http://seznam.gov.cz/ovm/welcome.do)
 
+FAQ
+-----------
+
+- Debugovani v Eclipse: http://stackoverflow.com/questions/7172013/debug-playframework-in-eclipse
