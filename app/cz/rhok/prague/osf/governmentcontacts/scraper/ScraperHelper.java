@@ -18,7 +18,7 @@ public class ScraperHelper {
 	 * @return 
 	 * @throws UnableToConnectToServer when connection is unavailable
 	 */
-	protected Document getDocumentFor(URL url) {
+	public static Document getDocumentFor(URL url) {
 		Document doc;
 		
 		try {
@@ -35,15 +35,20 @@ public class ScraperHelper {
 		
 	}
 
-	protected Document getDocumentFor(String url) {
+	public static Document getHtmlDocumentFor(String url) {
 		try {
 			return getDocumentFor(new URL(url));
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public static String convertFromDetailToAdditionalDetailPage(String detailPageUrl) {
+		return detailPageUrl;
+
+	}
 	
-	public String getDataBoxBaseUrl() {
+	public static String getDataBoxBaseUrl() {
 		return DATA_BOXES_BASE_URL;
 	}
 

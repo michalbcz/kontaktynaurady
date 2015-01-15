@@ -21,7 +21,7 @@ public class PaginableRecordsListPageRetriever extends ScraperHelper {
 
 	public PaginableRecord getListPageLinks(String urlOfPaginableList) {
 
-		Document doc = getDocumentFor(urlOfPaginableList);
+		Document doc = getHtmlDocumentFor(urlOfPaginableList);
 
 		Map<Long, URL> pages = Maps.newHashMap();
 		Elements paginatorLinks = doc.select(".paginator li a");

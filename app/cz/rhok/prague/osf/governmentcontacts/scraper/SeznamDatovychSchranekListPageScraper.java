@@ -24,7 +24,7 @@ public class SeznamDatovychSchranekListPageScraper
 	@Override
 	public List<URL> extractDetailPageUrlsFrom(String url) {
 
-		Document doc = getDocumentFor(url);
+		Document doc = getHtmlDocumentFor(url);
 
 		Elements anchors = doc.select(".content tr td a");
 		

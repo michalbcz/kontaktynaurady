@@ -35,7 +35,7 @@ public class SeznamDatovychSchranekMunicipalityListPageScraper
 		
 		log.debug("Scraping detail page links from kraj's detail page at " + url);
 
-		Document doc = getDocumentFor(url);
+		Document doc = getHtmlDocumentFor(url);
 
 		Elements anchors = doc.select(".content .col li a");
 		

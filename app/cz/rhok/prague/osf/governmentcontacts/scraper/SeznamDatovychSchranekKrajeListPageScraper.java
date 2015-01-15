@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -21,7 +20,7 @@ public class SeznamDatovychSchranekKrajeListPageScraper
 	@Override
 	public List<URL> extractDetailPageUrlsFrom(String url) {
 		
-		Document doc = getDocumentFor(url);
+		Document doc = getHtmlDocumentFor(url);
 
 		Elements anchorElementsWithDetailPageLink = doc.select(".areaList .listItem a");
 
