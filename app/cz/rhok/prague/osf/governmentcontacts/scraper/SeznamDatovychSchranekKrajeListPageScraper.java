@@ -11,26 +11,22 @@ import org.jsoup.select.Elements;
 
 import com.google.common.collect.Lists;
 
-public class SeznamDatovychSchranekKrajeListPageScraper 
-										extends ScraperHelper 
-										implements DetailPageUrlRetriever {
+public class SeznamDatovychSchranekKrajeListPageScraper implements DetailPageUrlRetriever {
 
 	private static final Logger log = play.Logger.log4j;
 	
 	@Override
 	public List<URL> extractDetailPageUrlsFrom(String url) {
 		
-		Document doc = getHtmlDocumentFor(url);
+		Document doc = ScraperHelper.getHtmlDocumentFor(url);
 
 		Elements anchorElementsWithDetailPageLink = doc.select(".areaList .listItem a");
 
 		List<URL> detailPagesUrl = Lists.newArrayList();
 		
 		for (Element detailPageLinkAnchorElement : anchorElementsWithDetailPageLink) {
-			String relativeUrlAsString = detailPageLinkAnchorElement.attr("href");
-			
-			String urlAsString = getDataBoxBaseUrl() + relativeUrlAsString;
-			
+			String urlAsString = detailPageLinkAnchorElement.attr("abs:href"); // abs: trick convert relative uri of href to absolute uri - see org.jsoup.nodes.Document#absUrl
+
 			try {
 				detailPagesUrl.add(new URL(urlAsString));
 			} catch (MalformedURLException e) {

@@ -9,10 +9,8 @@ import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-public class ScraperHelper {
-	
-	private static String DATA_BOXES_BASE_URL = "http://seznam.gov.cz/ovm/";
-	
+public abstract class ScraperHelper {
+
 	/**
 	 * @param url 
 	 * @return 
@@ -46,9 +44,10 @@ public class ScraperHelper {
 	public static String convertFromDetailToAdditionalDetailPage(String detailPageUrl) {
 		return detailPageUrl.replace("municipalityDetail.do", "municipalityAdditionDetail.do");
 	}
-	
-	public static String getDataBoxBaseUrl() {
-		return DATA_BOXES_BASE_URL;
+
+	public static String convertFromDetailToContactPersonsPage(String detailPageUrl) {
+		return detailPageUrl.replace("municipalityDetail.do", "contactPersonList.do");
 	}
+
 
 }

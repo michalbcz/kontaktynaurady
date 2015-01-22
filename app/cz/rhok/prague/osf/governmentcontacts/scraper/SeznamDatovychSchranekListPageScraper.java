@@ -32,9 +32,8 @@ public class SeznamDatovychSchranekListPageScraper
 		
 		for (Element anchor : anchors) {
 
-			String relativeUrl = anchor.attr("href");
-			String urlAsString = getDataBoxBaseUrl() + relativeUrl;
-			
+			String urlAsString = anchor.attr("abs:href");
+
 			try {
 				detailPagesUrl.add(new URL(urlAsString));
 			} catch (MalformedURLException e) {
