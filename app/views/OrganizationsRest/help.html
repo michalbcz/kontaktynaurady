@@ -25,25 +25,40 @@
 
   <body>
 
+    <!--
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="#">Government Contacts API</a>
+          <a class="brand" href="#">Kontaktynaurady.cz API</a>
         </div>
       </div>
     </div>
+    -->
 
     <div class="container">
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h1>Government Contacts API Help</h1>
+        <h1>Kontaktynaurady.cz API</h1>
         <p>Zde naleznete návod k použití API, včetně výrazů pro hledání a formátu odpovědí.</p>
       </div>
 
       <div class="row">
         <div class="span12">
-          <h2>Formát dotazu / Request format</h2>
+            <h2>O API</h2>
+            <p>Zdrojem informací pro API je <a href="https://seznam.gov.cz/ovm/welcome.do">Seznam držitelů datových schránek z Portálu veřejné zprávy</a>.</p>
+            <p> Api vzniklo během hackathonu <a href="https://sites.google.com/a/gug.cz/www2/rhok-2012">RHoK Prague 2012</a>
+                na základě nápadu od <a href="https://twitter.com/jakubmracek">Jakuba Mráčka</a>
+                a <a href="https://twitter.com/mrybi">Míši Rybičkové</a> za <a href="http://www.osf.cz/">Open Society Fund</a>
+                respektive <a href="http://www.otevrenadata.cz/">otevrenadata.cz</a>
+            </p>
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="span12">
+          <h2>Formát dotazu</h2>
            <p>Dotaz na API se provádí <b>HTTP GET</b> dotazem s parametry, pomocí kterých se vyhledávají organizace.</p>
            <p>Je možné / nutné určit <b>1-n parametrů</b> pro hledání. Tyto parametry se skládají pomocí logického operátoru AND. Možné parametry a jejich významy jsou popsány v sekci <a href="#fieldExplanation">Popis atributů</a></p>
            <p>Je možné používat <b>zástupný znak *</b> pro 0-n libovolných znaků.</p>
@@ -59,7 +74,7 @@
 
       <div class="row">
         <div class="span12">
-          <h2>Formát odpovědi / Response format</h2>
+          <h2>Formát odpovědi</h2>
            <p>Data odpovědi API jsou ve formátu <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>. Atributy datových objektů jsou popsány v sekci <a href="#fieldExplanation">Popis atributů</a></p>
            <p>Možné výsledky dotazu</p>
            <ul>
@@ -177,7 +192,7 @@
       <hr>
 
       <footer>
-        <p>&copy; Michal Bernhard & Vlastimil Dolejš @ <a href="https://sites.google.com/a/gug.cz/www2/rhok-2012">RHoK Prague 2012</a></p>
+        <p>&copy; <a href="https://twitter.com/michalb_cz">Michal Bernhard</a> & <a href="https://github.com/vlastimil-dolejs">Vlastimil Dolejš</a> - <a href="https://sites.google.com/a/gug.cz/www2/rhok-2012">2012</a></p>-2015
       </footer>
 
     </div> <!-- /container -->
