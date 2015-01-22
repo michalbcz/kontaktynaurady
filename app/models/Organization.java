@@ -113,6 +113,7 @@ public class Organization extends Model {
 
 	public Organization merge(Organization organization) {
 
+		this.id = this.id == null ? organization.id : this.id;
 		this.name = StringUtils.defaultIfBlank(this.name, organization.name);
 		this.addressStreet = StringUtils.defaultIfBlank(this.addressStreet,organization.addressStreet);
 		this.addressCity = StringUtils.defaultIfBlank(this.addressCity, organization.addressCity);

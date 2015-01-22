@@ -142,7 +142,7 @@ public class KrajeScraperJob extends AbstractScraperJob {
 						
 						saveOrganization(organization);
 						
-//						JPA.em().flush();
+						JPA.em().flush();
 						
 						// save immediately (copy paste from stackoverflow - not sure why flush and clear are needed)
 						JPA.em().getTransaction().commit(); /* transaction#begin is implicitly called by play framework 
