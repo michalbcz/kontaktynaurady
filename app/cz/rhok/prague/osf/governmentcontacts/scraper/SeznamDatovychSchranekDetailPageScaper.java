@@ -5,12 +5,14 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 import models.Address;
 import models.Email;
 import models.Organization;
 
+import models.Person;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -55,8 +57,13 @@ public class SeznamDatovychSchranekDetailPageScaper {
 
 		Organization organizationDetail = scrapeDetailPage(detailPageUrl);
 		Organization organizationAdditionalDetail = scrapeAdditionalDetailPage(ScraperHelper.convertFromDetailToAdditionalDetailPage(detailPageUrl));
+		List<Person> organizationContactPersons = scrapeContactPersonsPage(ScraperHelper.convertFromDetailToContactPersonsPage(detailPageUrl));
 
 		Organization organization = Organization.merge(organizationDetail, organizationAdditionalDetail);
+
+		for (Person person : organizationContactPersons) {
+			organization.addPerson(person);
+		}
 		
 		stopWatch.stop();
 
@@ -66,6 +73,73 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		
 		return organization;
 		
+	}
+
+	private List<Person> scrapeContactPersonsPage(String page) {
+
+		log.debug("Start scraping contact persons data from page: " + page);
+
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+
+		Document doc = ScraperHelper.getHtmlDocumentFor(page);
+
+		Organization organization = new Organization();
+
+		List<String> contactPersonDetailPageUris = scrapePersonDetailPageUris(doc);
+
+		List<Person> persons = Lists.newArrayList();
+
+		for (String personDetailPageUri : contactPersonDetailPageUris) {
+			persons.add(scrapePersonDetailPage(personDetailPageUri));
+		}
+
+		stopWatch.stop();
+
+		log.debug("Scraping of " + page + "and other details pages was succesfully done in: " + stopWatch.toString()  );
+
+		return persons;
+
+	}
+
+	private Person scrapePersonDetailPage(String personDetailPageUri) {
+		Document doc = ScraperHelper.getHtmlDocumentFor(personDetailPageUri);
+
+		Person person = new Person();
+
+		Map<String, String> pageData = htmlDataRowsToMap(doc);
+
+		person.jmeno = pageData.get("Křestní jméno");
+		person.prijmeni = pageData.get("Příjmení");
+
+		person.typOsoby = pageData.get("Typ osoby");
+		person.funkce = pageData.get("Funkce");
+
+		String emailText = pageData.get("E-mail");
+		if (emailText != null) {
+			person.email = parseEmail(emailText);
+		}
+
+		person.telefon = pageData.get("Telefony");
+
+		return person;
+
+	}
+
+	private List<String> scrapePersonDetailPageUris(Document doc) {
+
+		//FIXME: michalb_cz kdyz je kontaktnich osob hodne, tak je tam strankovani - projit vsechny stranky!
+
+
+		List<String> uris = Lists.newArrayList();
+
+		Elements links = doc.select(".content tr a");
+
+		for(Element link : links) {
+			uris.add(link.absUrl("href"));
+		}
+
+		return uris;
 	}
 
 	private Organization scrapeAdditionalDetailPage(String page) {
@@ -78,8 +152,6 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		Document doc = ScraperHelper.getHtmlDocumentFor(page);
 
 		Map<String, String> scrappedData = htmlDataRowsToMap(doc);
-
-		String logMessageContext = "(" + page + ")";
 
 		Organization organization = new Organization();
 
@@ -99,7 +171,17 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		* narozdil od pole E-mail vyplnen), telefonni cislo, uredni hodiny */
 
 		List<Email> extractedEmails = extractEmailsFromUradovnyHtml(doc.select(".offices .officeFirst"));
+		fillEmails(organization, extractedEmails);
 
+		stopWatch.stop();
+
+		log.debug("Scraping of " + page + "and other details pages was succesfully done in: " + stopWatch.toString()  );
+
+		return organization;
+
+	}
+
+	private void fillEmails(Organization organization, List<Email> extractedEmails) {
 		List<Email> emailsWithUri = extractedEmails.stream()
 												   .filter(email -> email.uri != null)
 												   .collect(Collectors.toList());
@@ -144,13 +226,6 @@ public class SeznamDatovychSchranekDetailPageScaper {
 			}
 
 		}
-
-		stopWatch.stop();
-
-		log.debug("Scraping of " + page + "and other details pages was succesfully done in: " + stopWatch.toString()  );
-
-		return organization;
-
 	}
 
 	private List<Email> extractEmailsFromUradovnyHtml(Elements officesDiv) {

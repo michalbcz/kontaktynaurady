@@ -3,23 +3,29 @@
  */
 package models;
 
-import javax.persistence.Entity;
-import javax.persistence.Lob;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.math.NumberUtils;
+import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Table;
 import org.hibernate.annotations.Type;
 
 import play.db.jpa.Model;
+
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author Vlastimil Dolejs (vlasta.dolejs@gmail.com)
  *
  */
 @Entity
+@javax.persistence.Table(name = "urady")
 public class Organization extends Model {
 
+	@Column(name = "nazev")
 	public String name;
 	
 	public String addressStreet;
@@ -80,6 +86,13 @@ public class Organization extends Model {
     @Type(type = "org.hibernate.type.TextType")
     public String urlOfSource;
 
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Person.class)
+	public List<Person> contactPersons = Lists.newArrayList();
+
+	public void addPerson(Person person) {
+		person.urad = this;
+		contactPersons.add(person);
+	}
 
 	public void copyStateFrom(Organization organization) {
 		this.name = organization.name;
@@ -110,7 +123,6 @@ public class Organization extends Model {
 	public String getAddress() {
 		return addressStreet + ", " + addressCity + " " + addressZipCode + ", Czech Republic";
 	}
-
 	public Organization merge(Organization organization) {
 
 		this.id = this.id == null ? organization.id : this.id;
