@@ -90,7 +90,9 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		organization.www = scrappedData.get("WWW");
 
 		String textIncludingEmail = scrappedData.get("E-mail"); // eg. posta@cityofprague.cz (podatelna)
-		organization.email = parseEmail(textIncludingEmail, logMessageContext);
+		Email scrapedEmail = parseEmail(textIncludingEmail);
+		organization.email = scrapedEmail.uri;
+		organization.emailDescription = scrapedEmail.description;
 
 
 		/* pole "Úřadovny" v sobe obsahuje radu dalsich informaci jako je email (ktery je casto
@@ -103,6 +105,30 @@ public class SeznamDatovychSchranekDetailPageScaper {
 												   .collect(Collectors.toList());
 
 		for (Email email : emailsWithUri) {
+
+			if (StringUtils.equals(organization.email, email.uri)) {
+				if (StringUtils.isBlank(organization.emailDescription)) {
+					organization.emailDescription = email.description; // update description
+				}
+				log.debug("Email is already exist so skip it's adding... Email: " + email);
+				continue; // email already exists so skip this
+			}
+
+			if (StringUtils.equals(organization.email2, email.uri)) {
+				if (StringUtils.isBlank(organization.emailDescription)) {
+					organization.email2Description = email.description; // update description
+				}
+				log.debug("Email is already exist so skip it's adding... Email: " + email);
+				continue; // email already exists so skip this
+			}
+
+			if (StringUtils.equals(organization.email3, email.uri)) {
+				if (StringUtils.isBlank(organization.emailDescription)) {
+					organization.email3Description = email.description; // update description
+				}
+				log.debug("Email is already exist so skip it's adding... Email: " + email);
+				continue; // email already exists so skip this
+			}
 
 			if (organization.email == null) {
 				organization.email = email.uri;
@@ -154,9 +180,9 @@ public class SeznamDatovychSchranekDetailPageScaper {
 	 */
 	private Email parseEmail(String emailText) {
 
-		String pattern = "(" + MAIL_REGEX_PATTERN.toString() + ")" + "\\s*\\((.*?\\))";
+		String pattern = "(" + MAIL_REGEX_PATTERN.toString() + ")" + "\\s*(\\((.*?)\\))*";
 
-		Matcher matcher = Pattern.compile(pattern).matcher(emailText);
+		Matcher matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(emailText);
 
 		Email email = new Email();
 		email.originalEmailText = emailText;
@@ -164,7 +190,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		if (matcher.find()) {
 
 			String emailAddress = matcher.group(1);
-			String description = matcher.group(2);
+			String description = matcher.group(3);
 
 			email = new Email();
 			email.uri = emailAddress;
@@ -265,7 +291,14 @@ public class SeznamDatovychSchranekDetailPageScaper {
 				value = value.replaceAll("<span class=\"incompleteAddress\">.*</span>", "");
 			}
 			else if (!dataRow.select("a").isEmpty() /* it's a link */) {
-				value = dataRow.select("a").attr("href"); /* link value */
+				String hrefAttr = dataRow.select("a").attr("href");
+				if (!hrefAttr.contains("mailto:")) {
+					/* vracime uri pouze v pripade linku na url ne na emaily */
+					value = dataRow.select("a").attr("href"); /* link value */
+				}
+				else {
+					value = dataRow.select("td").text();
+				}
 			} else {
 				value = dataRow.select("td").text();
 			}
@@ -354,21 +387,21 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		return address;
 	}
 	
-	private String parseEmail(String textIncludingEmail, String logMessageContext) {
-
-		// extract only mail part from string if there are something else
-		String email = "";
-
-		if (textIncludingEmail != null) {
-			Matcher matcher = MAIL_REGEX_PATTERN.matcher(textIncludingEmail);
-			if (matcher.find()) {
-				email = matcher.group(0);
-			} else {			
-				log.error("Unable to parse e-mail. Parsed text : " + textIncludingEmail	 + " " + logMessageContext);
-			}
-		}
-						
-		return email;
-	}
+//	private String parseEmail(String textIncludingEmail, String logMessageContext) {
+//
+//		// extract only mail part from string if there are something else
+//		String email = "";
+//
+//		if (textIncludingEmail != null) {
+//			Matcher matcher = MAIL_REGEX_PATTERN.matcher(textIncludingEmail);
+//			if (matcher.find()) {
+//				email = matcher.group(0);
+//			} else {
+//				log.error("Unable to parse e-mail. Parsed text : " + textIncludingEmail	 + " " + logMessageContext);
+//			}
+//		}
+//
+//		return email;
+//	}
 
 }
