@@ -27,7 +27,7 @@ import com.google.common.collect.Maps;
  * Scraper, kteremu navstup prijde url detailu obce napr. "http://seznam.gov.cz/ovm/municipalityDetail.do?path=KOSMONOSY"
  * a on z neho vyscrapuje udaje.<br/><br/>
  *
- * Ze stranky detailu se lze dostat na dalsi dve zalozky, ktere obsahuji dalsi detailnejsi informace:
+ * Ze stranky detailu se lze dostat na dalsi zalozky, ktere obsahuji dalsi detailnejsi informace:
  * 1) "Doplnkove udaje" (napr. http://seznam.gov.cz/ovm/municipalityAdditionDetail.do?path=KOSMONOSY) <br/>
  * 2) "Kontaktni osoby" (napr. http://seznam.gov.cz/ovm/contactPersonList.do?path=KOSMONOSY) <br/>
  * 3) "Sestava dle §5 z.č. 106/1999 Sb" (napr. http://seznam.gov.cz/ovm/arrangementDetail.do?path=KOSMONOSY)<br/><br/>
