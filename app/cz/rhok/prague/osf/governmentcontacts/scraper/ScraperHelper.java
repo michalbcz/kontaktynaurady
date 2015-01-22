@@ -44,8 +44,7 @@ public class ScraperHelper {
 	}
 
 	public static String convertFromDetailToAdditionalDetailPage(String detailPageUrl) {
-		return detailPageUrl;
-
+		return detailPageUrl.replace("municipalityDetail.do", "municipalityAdditionDetail.do");
 	}
 	
 	public static String getDataBoxBaseUrl() {

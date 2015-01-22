@@ -1,12 +1,10 @@
 package cz.rhok.prague.osf.governmentcontacts.scraper;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 import models.Address;
@@ -100,12 +98,24 @@ public class SeznamDatovychSchranekDetailPageScaper {
 
 		List<Email> extractedEmails = extractEmailsFromUradovnyHtml(doc.select(".offices .officeFirst"));
 
-		for (Email email : extractedEmails) {
+		List<Email> emailsWithUri = extractedEmails.stream()
+												   .filter(email -> email.uri != null)
+												   .collect(Collectors.toList());
+
+		for (Email email : emailsWithUri) {
 
 			if (organization.email == null) {
-				//FIXME: dodelat doplnovani emailu
+				organization.email = email.uri;
+				organization.emailDescription = email.description;
+			} else if (organization.email2 == null) {
+				organization.email2 = email.uri;
+				organization.email2Description = email.description;
+			} else if (organization.email3 == null) {
+				organization.email3 = email.uri;
+				organization.email3Description = email.description;
+			} else {
+				log.warn("There is no free slot so for email so it won't be saved: " + email);
 			}
-
 
 		}
 
@@ -148,7 +158,8 @@ public class SeznamDatovychSchranekDetailPageScaper {
 
 		Matcher matcher = Pattern.compile(pattern).matcher(emailText);
 
-		Email email = null;
+		Email email = new Email();
+		email.originalEmailText = emailText;
 
 		if (matcher.find()) {
 
@@ -252,6 +263,9 @@ public class SeznamDatovychSchranekDetailPageScaper {
 				value = value.replace("<br />", "\n");
 				value = value.replace("<br/>", "\n");
 				value = value.replaceAll("<span class=\"incompleteAddress\">.*</span>", "");
+			}
+			else if (!dataRow.select("a").isEmpty() /* it's a link */) {
+				value = dataRow.select("a").attr("href"); /* link value */
 			} else {
 				value = dataRow.select("td").text();
 			}
