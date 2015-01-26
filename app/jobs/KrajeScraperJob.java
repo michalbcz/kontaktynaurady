@@ -122,27 +122,28 @@ public class KrajeScraperJob extends AbstractScraperJob {
 				List<URL> detailPageLinks = municipalityListPageScraperTask.call();
 
 				for (final URL municipalityDetailPageUrl : detailPageLinks) {
-					RepeatOnTimeoutTask<Organization> detailPageScrapeTask = new RepeatOnTimeoutTask<Organization>() {
-
-						@Override
-						public Organization doTask() {
-							SeznamDatovychSchranekDetailPageScaper detailPageScaper = new SeznamDatovychSchranekDetailPageScaper();
-							return detailPageScaper.scrape(municipalityDetailPageUrl.toExternalForm());
-						}
-
-					};
-
-					Organization organization = detailPageScrapeTask.call();
 
 					try {
 						
 						if (!JPA.em().getTransaction().isActive()) {
 							JPA.em().getTransaction().begin();
 						}
+
+						RepeatOnTimeoutTask<Organization> detailPageScrapeTask = new RepeatOnTimeoutTask<Organization>() {
+
+							@Override
+							public Organization doTask() {
+								SeznamDatovychSchranekDetailPageScaper detailPageScaper = new SeznamDatovychSchranekDetailPageScaper();
+								return detailPageScaper.scrape(municipalityDetailPageUrl.toExternalForm());
+							}
+
+						};
+
+						Organization organization = detailPageScrapeTask.call();
 						
 						saveOrganization(organization);
 						
-						JPA.em().flush();
+						//JPA.em().flush();
 						
 						// save immediately (copy paste from stackoverflow - not sure why flush and clear are needed)
 						JPA.em().getTransaction().commit(); /* transaction#begin is implicitly called by play framework 
@@ -155,8 +156,8 @@ public class KrajeScraperJob extends AbstractScraperJob {
 					    
 					} catch (RuntimeException ex) {
 						Logger.error(
-								"Unable to save scraped organization (%s). Exception throwed: %s", 
-								ToStringBuilder.reflectionToString(organization), ExceptionUtils.getFullStackTrace(ex));
+								"Unable to save scraped organization (%s). Exception throwed: %s",
+								municipalityDetailPageUrl, ExceptionUtils.getFullStackTrace(ex));
 						JPA.em().getTransaction().rollback();
 					}
 
