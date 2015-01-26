@@ -91,12 +91,20 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		List<Person> persons = Lists.newArrayList();
 
 		for (String personDetailPageUri : contactPersonDetailPageUris) {
-			persons.add(scrapePersonDetailPage(personDetailPageUri));
+
+			try {
+				Person person = scrapePersonDetailPage(personDetailPageUri);
+				persons.add(person);
+			} catch (Exception e) {
+				log.error("Cannot parse contact person detail page (" + personDetailPageUri + "). Skipping it...", e);
+			}
+
+
 		}
 
 		stopWatch.stop();
 
-		log.debug("Scraping of " + page + "and other details pages was succesfully done in: " + stopWatch.toString()  );
+		log.debug("Scraping of person detail: " + page + "done in: " + stopWatch.toString()  );
 
 		return persons;
 
@@ -162,9 +170,14 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		organization.www = scrappedData.get("WWW");
 
 		String textIncludingEmail = scrappedData.get("E-mail"); // eg. posta@cityofprague.cz (podatelna)
-		Email scrapedEmail = parseEmail(textIncludingEmail);
-		organization.email = scrapedEmail.uri;
-		organization.emailDescription = scrapedEmail.description;
+
+		if (StringUtils.isNotBlank(textIncludingEmail)) {
+
+			Email scrapedEmail = parseEmail(textIncludingEmail);
+			organization.email = scrapedEmail.uri;
+			organization.emailDescription = scrapedEmail.description;
+
+		}
 
 
 		/* pole "Úřadovny" v sobe obsahuje radu dalsich informaci jako je email (ktery je casto
