@@ -22,6 +22,7 @@ public class Person extends Model {
     public String telefon;
 
     @ManyToOne
+    @JoinColumn(name = "urad_id")
     public Organization urad;
 
     @Override

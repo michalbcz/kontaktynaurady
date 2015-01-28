@@ -5,14 +5,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
-import models.Address;
-import models.Email;
-import models.Organization;
+import models.*;
 
-import models.Person;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -38,11 +34,14 @@ import com.google.common.collect.Maps;
  */
 public class SeznamDatovychSchranekDetailPageScaper {
 
-	private static Logger log = play.Logger.log4j; //org.apache.log4j.Logger.getLogger("another.logger");
+//	private static Logger log = play.Logger.log4j; //org.apache.log4j.Logger.getLogger("another.logger");
+	private static final Logger log = org.apache.log4j.Logger.getLogger(SeznamDatovychSchranekDetailPageScaper.class);
 
 	private static final Pattern MAIL_REGEX_PATTERN = Pattern.compile("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", Pattern.CASE_INSENSITIVE);
 	private static final Pattern DATABOX_ID_PATTERN = Pattern.compile("\\b([0-9a-z]*).*\\b", Pattern.CASE_INSENSITIVE);
-	
+	private static final Pattern TELEFON_ID_PATTERN = Pattern.compile("((\\+{0,1}[0-9\\s]*).*?(\\((.*)\\)){0,1})", Pattern.CASE_INSENSITIVE);
+	private String text;
+
 	/**
 	 * @param detailPageUrl page which contains information to be scraped (entry point)
 	 * 		  eg.http://seznam.gov.cz/ovm/regionDetail.do?path=KPRAHA&ref=obcan
@@ -50,7 +49,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 	 */
 	public Organization scrape(String detailPageUrl) {
 		
-		log.debug("Start scraping data from municipality page: " + detailPageUrl);
+		log.info("Start scraping data from municipality page: " + detailPageUrl);
 
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
@@ -67,7 +66,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		
 		stopWatch.stop();
 
-		log.debug("Scraping of " + detailPageUrl + "and other details pages was succesfully done in: " + stopWatch.toString()  );
+		log.info("Scraping of " + detailPageUrl + "and other details pages was succesfully done in: " + stopWatch.toString()  );
 		String logMessageContext = "(" + detailPageUrl + ")";
 		logMissingFields(organization, logMessageContext);
 		
@@ -98,7 +97,6 @@ public class SeznamDatovychSchranekDetailPageScaper {
 			} catch (Exception e) {
 				log.error("Cannot parse contact person detail page (" + personDetailPageUri + "). Skipping it...", e);
 			}
-
 
 		}
 
@@ -186,11 +184,34 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		List<Email> extractedEmails = extractEmailsFromUradovnyHtml(doc.select(".offices .officeFirst"));
 		fillEmails(organization, extractedEmails);
 
+		List<Telefon> extractedPhoneNumbers = extractPhoneNumbersFromUradovnyHtml(doc.select(".officePhones .officePhonesVal"));
+
+		organization.telefon = extractedPhoneNumbers.stream().findFirst().get();
+
 		stopWatch.stop();
 
 		log.debug("Scraping of " + page + "and other details pages was succesfully done in: " + stopWatch.toString()  );
 
 		return organization;
+
+	}
+
+	private List<Telefon> extractPhoneNumbersFromUradovnyHtml(Elements phoneNumberElements) {
+
+		return phoneNumberElements.stream().map((element) -> {
+			Telefon telefon = new Telefon();
+			String text = element.text();
+			telefon.originalniTextTelCisla = text;
+
+			Matcher m = TELEFON_ID_PATTERN.matcher(text);
+			if (m.find()) {
+				telefon.telCislo = m.group(1);
+				telefon.typTelCisla = m.group(3); // group(2) obsahuje text vcetne zavorek napriklad (fax)
+			}
+
+			return telefon;
+
+		}).collect(Collectors.toList());
 
 	}
 

@@ -5,17 +5,15 @@ package models;
 
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.math.NumberUtils;
-import org.hibernate.annotations.Index;
-import org.hibernate.annotations.Table;
 import org.hibernate.annotations.Type;
 
 import play.db.jpa.Model;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Vlastimil Dolejs (vlasta.dolejs@gmail.com)
@@ -68,8 +66,6 @@ public class Organization extends Model {
 	public String email3;
 	public String email3Description;
 	
-	public String phone;
-	
 	@Lob
 	@Type(type = "org.hibernate.type.TextType")
 	public String officeHours;
@@ -79,6 +75,17 @@ public class Organization extends Model {
 	public Double latitude;
 	public Double longitude;
 
+
+
+	// michal 28.01.2015: z nejakeho duvodu attribute overrides nefunguje...upravim jako hack nazvy sloupcu primo v definici tridy Telefon
+//	@AttributeOverrides({
+//			@AttributeOverride(name = "cislo", column = @Column(name = "telefonni_cislo")),
+//			@AttributeOverride(name = "typ", column = @Column(name = "telefonni_cislo_popis")),
+//			@AttributeOverride(name = "puvodni_text", column = @Column(name = "telefonni_cislo_raw"))
+//	})
+	@Embedded /* michal: pozor prekvapko - CRUD modul neumi Embedded, takze v CRUD adminovy nebudou videt ale v DB budou */
+	public Telefon telefon;
+
     /**
      * url of page where we scraped all organization's informations
      */
@@ -86,44 +93,25 @@ public class Organization extends Model {
     @Type(type = "org.hibernate.type.TextType")
     public String urlOfSource;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Person.class)
-	public List<Person> contactPersons = Lists.newArrayList();
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Person.class, mappedBy = "urad")
+	public Set<Person> contactPersons = Sets.newHashSet();
 
 	public void addPerson(Person person) {
 		person.urad = this;
 		contactPersons.add(person);
 	}
 
-	public void copyStateFrom(Organization organization) {
-		this.name = organization.name;
-		this.addressStreet = organization.addressStreet;
-		this.addressCity = organization.addressCity;
-		this.addressZipCode = organization.addressZipCode;
-		this.eRegistry = organization.eRegistry;
-		this.organizationId = organization.organizationId;
-		this.taxId = organization.taxId;
-		this.bankAccount = organization.bankAccount;
-		this.code = organization.code;
-		this.type = organization.type;
-		this.www = organization.www;
-		this.email = organization.email;
-		this.emailDescription = organization.emailDescription;
-		this.email2 = organization.email;
-		this.email2Description = organization.emailDescription;
-		this.email3 = organization.email;
-		this.email3Description = organization.emailDescription;
-		this.phone = organization.phone;
-		this.officeHours = organization.officeHours;
-		this.dataBoxId = organization.dataBoxId;
-		this.latitude = organization.latitude;
-		this.longitude = organization.longitude;
-        this.urlOfSource = organization.urlOfSource;
-	}
-	
 	public String getAddress() {
 		return addressStreet + ", " + addressCity + " " + addressZipCode + ", Czech Republic";
 	}
-	public Organization merge(Organization organization) {
+
+	/**
+	 *
+	 *
+	 * @param organization
+	 * @return
+	 */
+	public Organization fillBlankFields(Organization organization) {
 
 		this.id = this.id == null ? organization.id : this.id;
 		this.name = StringUtils.defaultIfBlank(this.name, organization.name);
@@ -143,12 +131,12 @@ public class Organization extends Model {
 		this.email2Description = StringUtils.defaultIfBlank(this.email2Description, organization.email2Description);
 		this.email3 = StringUtils.defaultIfBlank(this.email3, organization.email3);
 		this.email3Description = StringUtils.defaultIfBlank(this.email3Description, organization.email3Description);
-		this.phone = StringUtils.defaultIfBlank(this.phone, organization.phone);
 		this.officeHours = StringUtils.defaultIfBlank(this.officeHours, organization.officeHours);
 		this.dataBoxId = StringUtils.defaultIfBlank(this.dataBoxId, organization.dataBoxId);
 		this.latitude = this.latitude == null ? organization.latitude : this.latitude;
 		this.longitude = this.longitude == null ? organization.longitude :  this.longitude;
 		this.urlOfSource = StringUtils.defaultIfBlank(this.urlOfSource, organization.urlOfSource);
+		this.telefon = this.telefon == null ? organization.telefon : this.telefon;
 
 		return this;
 	}
@@ -162,10 +150,11 @@ public class Organization extends Model {
 		Organization organization = new Organization();
 
 		for (int i = 0; i < organizations.length; i++) {
-			organization.merge(organizations[i]);
+			organization.fillBlankFields(organizations[i]);
 		}
 
 		return organization;
 	}
-	
+
+
 }
