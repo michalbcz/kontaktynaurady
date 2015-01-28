@@ -18,21 +18,10 @@ public class OrganizationHelper {
         if (existingOrganization != null) {
             organization.id = existingOrganization.id;
 
-            // solve duplicates in contact persons
-            Iterator<Person> contactPersonsIter = organization.contactPersons.iterator();
-            while (contactPersonsIter.hasNext()) {
-
-                Person person = contactPersonsIter.next();
-
-                //FIXME: tohle nepomaha a porad se duplikuji osoby
-
-                if (existingOrganization.contactPersons.contains(person)) {
-                    // already contains so remove it from organization before merging
-                    contactPersonsIter.remove();
-                }
-            }
-
+            // smazeme vsechny puvodni kontaktni osoby a budou zcela nahrazeny nove nascrapovanyma kontaktnima osobama
+            existingOrganization.contactPersons.stream().forEach((person) -> person.delete() );
         }
+
 
         Organization savedOrganization = organization.merge();
 
