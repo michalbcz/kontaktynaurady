@@ -30,9 +30,6 @@ public class Organization extends Model {
 	public String addressCity;
 	public String addressZipCode;
 
-	//TODO: pokud se bude scrapovat kontaktni adresa, tak posefit tady a v helpu
-//	public String contactAddress;
-	
 	public String eRegistry;
 	
 	/**
