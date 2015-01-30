@@ -16,14 +16,15 @@ public class OrganizationHelper {
         Organization existingOrganization = Organization.find("byDataBoxId", organization.dataBoxId).first();
 
         if (existingOrganization != null) {
+
             organization.id = existingOrganization.id;
 
             // smazeme vsechny puvodni kontaktni osoby a budou zcela nahrazeny nove nascrapovanyma kontaktnima osobama
             existingOrganization.contactPersons.stream().forEach((person) -> person.delete() );
         }
 
-
-        Organization savedOrganization = organization.merge();
+        Organization savedOrganization = organization.merge(); // attachneme organizaci pokud je potreba
+        savedOrganization.save(); // a pak ji ulozime (insert or update)
 
         return savedOrganization;
     }
