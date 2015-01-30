@@ -186,7 +186,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 
 		List<Telefon> extractedPhoneNumbers = extractPhoneNumbersFromUradovnyHtml(doc.select(".officePhones .officePhonesVal"));
 
-		organization.telefon = extractedPhoneNumbers.stream().findFirst().get();
+		organization.telefon = extractedPhoneNumbers.stream().findFirst().orElseGet(Telefon::new);
 
 		stopWatch.stop();
 
