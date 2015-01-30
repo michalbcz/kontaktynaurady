@@ -173,7 +173,7 @@ public class KrajeScraperJob extends AbstractScraperJob {
 
 		watches.stop();
 		
-		Logger.info("Municipalities have been successfully scraped. It lasts %s ms", watches.getTime());
+		Logger.info("Municipalities have been successfully scraped. It lasts %s ms", watches.toString());
 
 	}
 
