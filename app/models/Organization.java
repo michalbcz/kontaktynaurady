@@ -81,9 +81,9 @@ public class Organization extends Model {
 //			@AttributeOverride(name = "puvodni_text", column = @Column(name = "telefonni_cislo_raw"))
 //	})
 	@Embedded /* michal: pozor prekvapko - CRUD modul neumi Embedded, takze v CRUD adminovy nebudou videt ale v DB budou */
-	public Telefon telefon;
+	public Telefon telefon = new Telefon();
 
-    /**
+	/**
      * url of page where we scraped all organization's informations
      */
     @Lob
@@ -152,6 +152,5 @@ public class Organization extends Model {
 
 		return organization;
 	}
-
 
 }

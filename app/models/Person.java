@@ -1,6 +1,7 @@
 package models;
 
 
+import org.apache.commons.lang.StringUtils;
 import play.db.jpa.Model;
 
 import javax.persistence.*;
@@ -24,6 +25,19 @@ public class Person extends Model {
     @ManyToOne
     @JoinColumn(name = "urad_id")
     public Organization urad;
+
+    public String getCeleJmeno() {
+//
+//        if (jmeno != null || prijmeni != null) {
+//            return StringUtils.defaultString(jmeno) + " " + StringUtils.defaultString(prijmeni);
+//        } else {
+//            return "";
+//        }
+
+        return StringUtils.join(new Object[] {jmeno, prijmeni}, " ");
+
+
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -64,4 +78,5 @@ public class Person extends Model {
                 ", telefon='" + telefon + '\'' +
                 '}';
     }
+
 }
