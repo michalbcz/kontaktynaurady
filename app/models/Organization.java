@@ -37,9 +37,6 @@ public class Organization extends Model {
 	@Expose
 	public String addressZipCode;
 
-	@Expose
-	public String eRegistry;
-	
 	/**
 	 * IC
 	 */
@@ -107,7 +104,7 @@ public class Organization extends Model {
 //	})
 	@Embedded /* michal: pozor prekvapko - CRUD modul neumi Embedded, takze v CRUD adminovy nebudou videt ale v DB budou */
 	@Expose
-	public Telefon telefon = new Telefon();
+	public Telefon telefon;
 
 	/**
      * url of page where we scraped all organization's informations
@@ -143,7 +140,6 @@ public class Organization extends Model {
 		this.addressStreet = StringUtils.defaultIfBlank(this.addressStreet,organization.addressStreet);
 		this.addressCity = StringUtils.defaultIfBlank(this.addressCity, organization.addressCity);
 		this.addressZipCode = StringUtils.defaultIfBlank(this.addressZipCode, organization.addressZipCode);
-		this.eRegistry = StringUtils.defaultIfBlank(this.eRegistry, organization.eRegistry);
 		this.organizationId = StringUtils.defaultIfBlank(this.organizationId, organization.organizationId);
 		this.taxId = StringUtils.defaultIfBlank(this.taxId, organization.taxId);
 		this.bankAccount = StringUtils.defaultIfBlank(this.bankAccount, organization.bankAccount);
