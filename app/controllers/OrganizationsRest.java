@@ -10,6 +10,8 @@ import java.util.function.Predicate;
 
 import javax.persistence.Query;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.GsonBuilder;
 import models.Organization;
 
 import models.Person;
@@ -32,6 +34,13 @@ import com.google.gson.Gson;
  *
  */
 public class OrganizationsRest extends Controller {
+
+	private static final Gson gson =
+								new GsonBuilder().setPrettyPrinting()
+												 .excludeFieldsWithoutExposeAnnotation()
+												 .disableHtmlEscaping() /* jinak by se escapovalo url zdroje, ktere by pak nefungovalo */
+												 .serializeNulls()
+												 .create();
 
 	private static final Set<String> ORGANIZATION_FIELDS = Sets.newHashSet(
 																	"name",
@@ -158,14 +167,14 @@ public class OrganizationsRest extends Controller {
 
         }
 
-		/* jsonp support */
+
         if (parameters.containsKey("callback")) {
 			/* jsonp support */
-            Gson gson = new Gson();
             String out = gson.toJson(organizations);
             renderText(parameters.get("callback") + "(" + out + ")");
         } else {
-            renderJSON(organizations);
+			String json = gson.toJson(organizations);
+            renderJSON(json);
         }
 
 	}

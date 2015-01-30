@@ -1,6 +1,7 @@
 package models;
 
 
+import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.StringUtils;
 import play.db.jpa.Model;
 
@@ -10,16 +11,22 @@ import javax.persistence.*;
 @Table(name = "kontaktni_osoby" /*, uniqueConstraints = { @UniqueConstraint(columnNames = {"email", "urad"}) }*/)
 public class Person extends Model {
 
+    @Expose
     public String jmeno;
+
+    @Expose
     public String prijmeni;
 
+    @Expose
     public String typOsoby;
 
+    @Expose
     public String funkce;
 
-    @Embedded
+    @Embedded @Expose
     public Email email;
 
+    @Expose
     public String telefon;
 
     @ManyToOne

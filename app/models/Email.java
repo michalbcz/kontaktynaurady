@@ -1,6 +1,7 @@
 package models;
 
 
+import com.google.gson.annotations.Expose;
 import play.db.jpa.Model;
 
 import javax.persistence.Embeddable;
@@ -13,11 +14,13 @@ public class Email {
      * validni email adresa
      * michal@bernhard.cz
      */
+    @Expose
     public String uri;
 
     /**
      * originalni text emailu tak jak je na strankach
      */
+    @Expose
     public String originalEmailText;
 
     /**
@@ -25,6 +28,7 @@ public class Email {
      *
      * "osobni email"
      */
+    @Expose
     public String description;
 
     @Override

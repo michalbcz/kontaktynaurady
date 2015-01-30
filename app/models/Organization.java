@@ -6,6 +6,7 @@ package models;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 
@@ -24,52 +25,76 @@ import java.util.Set;
 public class Organization extends Model {
 
 	@Column(name = "nazev")
+	@Expose
 	public String name;
-	
+
+	@Expose
 	public String addressStreet;
+
+	@Expose
 	public String addressCity;
+
+	@Expose
 	public String addressZipCode;
 
+	@Expose
 	public String eRegistry;
 	
 	/**
 	 * IC
 	 */
+	@Expose
 	public String organizationId;
 	
 	/**
 	 * DIC
 	 */
+	@Expose
 	public String taxId;
 	
 	@Lob
 	@Type(type = "org.hibernate.type.TextType")
+	@Expose
 	public String bankAccount;
-	
+
+	@Expose
 	public String code;
-	
+
+	@Expose
 	public String type;
 	
 	@Lob
 	@Type(type = "org.hibernate.type.TextType")
+	@Expose
 	public String www;
-	
+
+	@Expose
 	public String email;
+	@Expose
 	public String emailDescription;
 
+	@Expose
 	public String email2;
+	@Expose
 	public String email2Description;
 
+	@Expose
 	public String email3;
+	@Expose
 	public String email3Description;
 	
 	@Lob
 	@Type(type = "org.hibernate.type.TextType")
+	@Expose
 	public String officeHours;
-	
+
+	@Expose
 	public String dataBoxId;
 
+	@Expose
 	public Double latitude;
+
+	@Expose
 	public Double longitude;
 
 
@@ -81,6 +106,7 @@ public class Organization extends Model {
 //			@AttributeOverride(name = "puvodni_text", column = @Column(name = "telefonni_cislo_raw"))
 //	})
 	@Embedded /* michal: pozor prekvapko - CRUD modul neumi Embedded, takze v CRUD adminovy nebudou videt ale v DB budou */
+	@Expose
 	public Telefon telefon = new Telefon();
 
 	/**
@@ -88,9 +114,11 @@ public class Organization extends Model {
      */
     @Lob
     @Type(type = "org.hibernate.type.TextType")
+	@Expose
     public String urlOfSource;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Person.class, mappedBy = "urad")
+	@Expose
 	public Set<Person> contactPersons = Sets.newHashSet();
 
 	public void addPerson(Person person) {

@@ -1,5 +1,6 @@
 package models;
 
+import com.google.gson.annotations.Expose;
 import play.db.jpa.Model;
 
 import javax.persistence.Column;
@@ -11,15 +12,18 @@ import javax.persistence.Entity;
 public class Telefon {
 
     @Column(name = "telefonni_cislo")
+    @Expose
     public String telCislo;
 
     @Column(name = "telefonni_cislo_popis")
+    @Expose
     public String typTelCisla;
 
     /**
      * slouzi pro snazsi debug pripadne jako zaklad budouciho davkoveho zpracovani nascrapovanych dat na pozadi
      */
     @Column(name = "telefonni_cislo_raw")
+    @Expose
     public String originalniTextTelCisla;
 
     @Override
