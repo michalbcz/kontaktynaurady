@@ -85,12 +85,7 @@
         <div class="span12">
           <h2>Formát odpovědi</h2>
            <p>Data odpovědi API jsou ve formátu <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>. Atributy datových objektů jsou popsány v sekci <a href="#fieldExplanation">Popis atributů</a></p>
-           <p>Možné výsledky dotazu</p>
-           <ul>
-             <li>Podle dotazu <b>není nalezena</b> žádná organizace - vrací prázdnou odpověď</li>
-             <li>Podle dotazu je <b>nalezena právě jedna</b> organizace - vrací odpověď s JSON objektem této organizace</li>
-             <li>Podle dotazu je <b>nalezeno 2-n</b> organizací - vrací odpověď s polem JSON objeků nalezených organizací</li>
-           </ul>
+           <p>Výsledkem dotazu je pole s 0-N organizacemi.</p>
         </div>
       </div>
 
@@ -98,7 +93,7 @@
 
       <div class="row">
         <div class="span12">
-          <h2 name="fieldExplanation">Popis atributů / Field explanation</h2>
+          <h2 id="fieldExplanation">Popis atributů / Field explanation</h2>
 	      <table class="table">  
 	        <thead>  
 	          <tr>  
