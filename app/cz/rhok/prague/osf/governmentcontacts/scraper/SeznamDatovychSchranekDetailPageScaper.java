@@ -184,7 +184,13 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		List<Email> extractedEmails = extractEmailsFromUradovnyHtml(doc.select(".offices .officeFirst"));
 		fillEmails(organization, extractedEmails);
 
-		List<Telefon> extractedPhoneNumbers = extractPhoneNumbersFromUradovnyHtml(doc.select(".officePhones .officePhonesVal"));
+		List<Telefon> extractedPhoneNumbers =
+								extractPhoneNumbersFromUradovnyHtml(doc.select(".officePhones .officePhonesVal"));
+
+		List<OfficeHours> extractedOfficeHours = extractOfficeHoursFromUradovnyHtml(doc.select(".officeHours .officeHoursVal div"));
+		organization.officeHours = extractedOfficeHours.stream()
+											.map(OfficeHours::toString)
+											.reduce("", (prev, cur) -> prev + " " + cur);
 
 		organization.telefon = extractedPhoneNumbers.stream().findFirst().orElseGet(Telefon::new);
 
@@ -193,6 +199,25 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		log.debug("Scraping of " + page + "and other details pages was succesfully done in: " + stopWatch.toString()  );
 
 		return organization;
+
+	}
+
+	private List<OfficeHours> extractOfficeHoursFromUradovnyHtml(Elements officeHoursElements) {
+
+		return officeHoursElements.stream().map((element) -> {
+
+			String day = element.select(".day").text(); // "PO:"
+			day = day.replace(":", "");
+
+			String timeIntervalsText = element.ownText();
+
+			OfficeHours officeHours = new OfficeHours();
+			officeHours.day = day;
+			officeHours.timeInterval = timeIntervalsText;
+
+			return officeHours;
+
+		}).collect(Collectors.toList());
 
 	}
 
