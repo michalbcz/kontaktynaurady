@@ -14,6 +14,7 @@ import play.db.jpa.JPA;
 import play.jobs.Job;
 import play.jobs.On;
 import cz.rhok.prague.osf.governmentcontacts.geocoding.Geocoder;
+import cz.rhok.prague.osf.governmentcontacts.scraper.ApiRequestLimitExceededException;
 
 /**
  * @author Vlastimil Dolejs (vlasta.dolejs@gmail.com)
@@ -38,7 +39,13 @@ public class GeocodingJob extends Job {
 			
 			for (Organization organization : organizations) {
 				try {
-					GeoLocation geoLocation = geocoder.geocode(organization);
+					GeoLocation geoLocation;
+					try {
+						geoLocation = geocoder.geocode(organization);
+					} catch (ApiRequestLimitExceededException e) {
+						log.warn("Geocoding API limit exceeded.");
+						return;
+					}
 					
 					if (geoLocation != null) {
 						organization.latitude = geoLocation.lat;
