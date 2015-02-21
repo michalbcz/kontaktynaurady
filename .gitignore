@@ -12,3 +12,6 @@ tmp/*
 # let play generate this by run command 'play dependencies'
 /lib      
 /modules
+
+# development runner script
+run.bat
