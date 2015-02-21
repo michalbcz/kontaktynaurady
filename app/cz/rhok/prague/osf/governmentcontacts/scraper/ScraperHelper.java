@@ -9,16 +9,14 @@ import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-public class ScraperHelper {
-	
-	private static String DATA_BOXES_BASE_URL = "http://seznam.gov.cz/ovm/";
-	
+public abstract class ScraperHelper {
+
 	/**
 	 * @param url 
 	 * @return 
 	 * @throws UnableToConnectToServer when connection is unavailable
 	 */
-	protected Document getDocumentFor(URL url) {
+	public static Document getDocumentFor(URL url) {
 		Document doc;
 		
 		try {
@@ -35,16 +33,21 @@ public class ScraperHelper {
 		
 	}
 
-	protected Document getDocumentFor(String url) {
+	public static Document getHtmlDocumentFor(String url) {
 		try {
 			return getDocumentFor(new URL(url));
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public String getDataBoxBaseUrl() {
-		return DATA_BOXES_BASE_URL;
+
+	public static String convertFromDetailToAdditionalDetailPage(String detailPageUrl) {
+		return detailPageUrl.replace("municipalityDetail.do", "municipalityAdditionDetail.do");
 	}
+
+	public static String convertFromDetailToContactPersonsPage(String detailPageUrl) {
+		return detailPageUrl.replace("municipalityDetail.do", "contactPersonList.do");
+	}
+
 
 }

@@ -1,7 +1,7 @@
 KontaktyNaUrady.cz
 ==================
 
-API aplikace, ktera poskytuje strukturovane konktatni informace na statni instituce (obce, 
+API, ktere poskytuje strukturovane konktatni informace na statni instituce (obce, 
 urady, organizacni slozky statu).
 
 Informace se ziskavaji prochazenim a dolovanim dat z registru datovych schranek 
@@ -11,7 +11,7 @@ Informace se ziskavaji prochazenim a dolovanim dat z registru datovych schranek
 Instalace
 ---------
 
-1. nainstalujte play 1 framework (http://www.playframework.org/documentation/1.2/install)
+1. nainstalujte play 1.3 (ma podporu Java8) framework (https://www.playframework.com/documentation/1.3.x/install)
 2. spuste na prikazove radce prikaz "play dependencies" (stahne vsechny zavislosti, vytvori adresare libs a 
 modules)
 3. spuste na prikazove radce prikaz "play eclipsify" pro vytvoreni projektovych souboru pro 
@@ -24,8 +24,8 @@ oficialni formou pluginu, do eclipse napr. https://github.com/erwan/playclipse)
 Technologie
 -----------
 
-- Java 5
-- Play Framework 1 (http://www.playframework.org/documentation/1.2.5/home) for api and admin
+- Java 8
+- Play Framework 1.3 (https://www.playframework.com/documentation/1.3.x/home) for api and admin
 - JSoup (http://jsoup.org/) pro dolovani dat z webovych stranek registru datovych schranek 
 (http://seznam.gov.cz/ovm/welcome.do)
 

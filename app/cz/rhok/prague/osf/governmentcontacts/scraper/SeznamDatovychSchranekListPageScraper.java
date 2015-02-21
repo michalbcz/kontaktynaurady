@@ -24,7 +24,7 @@ public class SeznamDatovychSchranekListPageScraper
 	@Override
 	public List<URL> extractDetailPageUrlsFrom(String url) {
 
-		Document doc = getDocumentFor(url);
+		Document doc = getHtmlDocumentFor(url);
 
 		Elements anchors = doc.select(".content tr td a");
 		
@@ -32,9 +32,8 @@ public class SeznamDatovychSchranekListPageScraper
 		
 		for (Element anchor : anchors) {
 
-			String relativeUrl = anchor.attr("href");
-			String urlAsString = getDataBoxBaseUrl() + relativeUrl;
-			
+			String urlAsString = anchor.attr("abs:href");
+
 			try {
 				detailPagesUrl.add(new URL(urlAsString));
 			} catch (MalformedURLException e) {

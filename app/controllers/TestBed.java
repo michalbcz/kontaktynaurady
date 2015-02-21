@@ -1,5 +1,6 @@
 package controllers;
 
+import cz.rhok.prague.osf.governmentcontacts.helper.OrganizationHelper;
 import groovy.lang.GroovyShell;
 import jobs.GeocodingJob;
 import jobs.KrajeScraperJob;
@@ -23,9 +24,10 @@ public class TestBed extends Controller {
 
 		SeznamDatovychSchranekDetailPageScaper scraper = new SeznamDatovychSchranekDetailPageScaper();
 		Organization scrapedOrganization = scraper.scrape(urlOfDetailPage);
-		scrapedOrganization.save();
 
-		redirect("Organizations.show", scrapedOrganization.id.toString());
+		Organization savedOrganization = OrganizationHelper.saveOrganization(scrapedOrganization);
+
+		redirect("Organizations.show", savedOrganization.id.toString());
 	}
 
 	public static void startScrapeJob() {

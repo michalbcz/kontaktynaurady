@@ -21,7 +21,7 @@ public class PaginableRecordsListPageRetriever extends ScraperHelper {
 
 	public PaginableRecord getListPageLinks(String urlOfPaginableList) {
 
-		Document doc = getDocumentFor(urlOfPaginableList);
+		Document doc = getHtmlDocumentFor(urlOfPaginableList);
 
 		Map<Long, URL> pages = Maps.newHashMap();
 		Elements paginatorLinks = doc.select(".paginator li a");
@@ -42,10 +42,10 @@ public class PaginableRecordsListPageRetriever extends ScraperHelper {
 
 		URL nextPaginable = null;
 		if (nextButton != null) {
-			String nextRelativeLink = nextButton.attr("href");
+			String nextAbsLink = nextButton.attr("abs:href");
 
 			try {
-				nextPaginable = new URL(getDataBoxBaseUrl() + nextRelativeLink);
+				nextPaginable = new URL(nextAbsLink);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(
 							"Cannot obtain url from element " + nextButton + ".",  e);

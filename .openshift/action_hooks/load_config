@@ -24,8 +24,12 @@ if [[ -z $OPENSHIFT_LOG_DIR ]]; then
 	return 1
 fi
 
+# java (assuming that jdk1.8 is installed in $OPENSHIFT_DATA_DIR/jdk1.8)
+export JAVA_HOME=$OPENSHIFT_DATA_DIR/jdk1.8
+export PATH=$JAVA_HOME/bin:$PATH
+
 # version of play framework to dowload and install
-VERSION="1.2.4"
+VERSION="1.3.0"
 DEPS_PARAMS="--forProd --clearcache"
 ID="openshift"
 PLAY_PARAMS=""

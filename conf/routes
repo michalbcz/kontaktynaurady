@@ -15,7 +15,9 @@ GET     /                                          OrganizationsRest.help
 GET     /api/v1/organizations/?                    OrganizationsRest.organizations
 GET     /api/v1/help/?                             OrganizationsRest.help
 GET     /api/v1/?                                  OrganizationsRest.help
+GET     /api/v1/organizations/csv                  OrganizationsRest.csvDump
 
+# API Samples
 GET     /sample-map		                        SampleMap.map
 
 # Admin

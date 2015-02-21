@@ -3,6 +3,7 @@
  */
 package jobs;
 
+import cz.rhok.prague.osf.governmentcontacts.helper.OrganizationHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import models.Organization;
@@ -17,20 +18,7 @@ import play.jobs.Job;
 public class AbstractScraperJob extends Job {
 
 	protected void saveOrganization(Organization organization) {
-		
-		Logger.debug("Saving organization %s", ToStringBuilder.reflectionToString(organization));
-		
-		Organization existingOrganization = Organization.find("byDataBoxId", organization.dataBoxId).first();
-		
-		if (existingOrganization != null) {
-			existingOrganization.copyStateFrom(organization);
-			organization = existingOrganization;
-		}
-		
-		organization.save();
-
-		// save immediately
-		JPA.em().flush();
+		OrganizationHelper.saveOrganization(organization);
 	}
 
 }

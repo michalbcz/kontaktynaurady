@@ -27,7 +27,7 @@ public class SeznamDatovychSchranekMunicipalityListPageScraper
 	private static final Logger log = play.Logger.log4j; 
 
 	/**
-	 * @param listPageUrl napr. http://seznam.gov.cz/ovm/othersList.do?ref=obcan
+	 * @param url napr. http://seznam.gov.cz/ovm/othersList.do?ref=obcan
 	 * @return
 	 */
 	@Override
@@ -35,7 +35,7 @@ public class SeznamDatovychSchranekMunicipalityListPageScraper
 		
 		log.debug("Scraping detail page links from kraj's detail page at " + url);
 
-		Document doc = getDocumentFor(url);
+		Document doc = getHtmlDocumentFor(url);
 
 		Elements anchors = doc.select(".content .col li a");
 		
@@ -43,8 +43,7 @@ public class SeznamDatovychSchranekMunicipalityListPageScraper
 		
 		for (Element anchor : anchors) {
 
-			String relativeUrl = anchor.attr("href");
-			String urlAsString = getDataBoxBaseUrl() + relativeUrl;
+			String urlAsString = anchor.attr("abs:href");
 			
 			try {
 				detailPagesUrl.add(new URL(urlAsString));
