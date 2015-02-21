@@ -217,17 +217,29 @@ public class OrganizationsRest extends Controller {
 
 		csvMapperMachinery.values().stream()
 				          .map((mapperFunction) -> mapperFunction.apply(urad))
-						  .forEach((columnValue) -> sb.append(StringUtils.defaultString(columnValue)).append(delimiter()));
+				          .map((String hodnotaSloupce) -> escapeCsvColumnValue(hodnotaSloupce))
+						  .forEach((columnValue) ->
+										  sb.append(StringUtils.defaultString(columnValue)).append(delimiter())
+						  );
 
 		return sb;
 
 	}
 
+	private static String escapeCsvColumnValue(String hodnotaSloupce) {
+		String escaped = hodnotaSloupce;
+		escaped = StringUtils.trim(escaped);
+		escaped = escaped == null ? "" : escaped.replaceAll("[\\n\\r]", " ");
+
+		return escaped;
+	}
+
 	private static void addHeader(StringBuilder sb) {
 
-		String header = csvMapperMachinery.keySet()
-				.stream()
-				.reduce("", (result, columnName) -> result + columnName + delimiter());
+		String header =
+				csvMapperMachinery.keySet()
+								  .stream()
+								  .reduce("", (result, columnName) -> result + columnName + delimiter());
 
 		sb.append(header + newLine());
 
