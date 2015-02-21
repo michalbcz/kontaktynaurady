@@ -54,6 +54,7 @@ public class GeocodingJob extends Job {
 					}
 				} catch (Throwable e) {
 					log.warn("Failed to geocode organization address: " + organization.getAddress(), e);
+					JPA.em().getTransaction().rollback();
 				}
 			}
 			
