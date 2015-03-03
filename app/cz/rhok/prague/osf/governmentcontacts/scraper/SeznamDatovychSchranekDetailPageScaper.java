@@ -499,7 +499,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 			
 			boolean validAddress = false;
 			
-			if (lines.length == 3 && lines[2].trim().isEmpty()) {
+			if (lines.length == 2 || (lines.length == 3 && lines[2].trim().isEmpty())) {
 				String zipAndCity = lines[1].trim();
 				int firstSpace = zipAndCity.indexOf(" ");
 				

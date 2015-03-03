@@ -98,6 +98,8 @@ public class Geocoder {
             result.lng = jsonObject.get("lng");
 
             return result;
+        } catch (ApiRequestLimitExceededException e) {
+        	throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
