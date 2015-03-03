@@ -175,6 +175,9 @@ public class KrajeScraperJob extends AbstractScraperJob {
 		
 		Logger.info("Municipalities have been successfully scraped. It lasts %s ms", watches.toString());
 
+		Logger.info("Warmup caches");
+		new CacheWarmupJob().now();
+
 	}
 
 	private Document getDocumentFor(final URL krajDetailPageUrl) throws Exception {
