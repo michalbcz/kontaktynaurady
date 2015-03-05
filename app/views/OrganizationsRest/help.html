@@ -196,27 +196,16 @@
       <hr>
 
       <footer>
-        <p>&copy; <a href="https://twitter.com/michalb_cz">Michal Bernhard</a> & <a href="https://github.com/vlastimil-dolejs">Vlastimil Dolejš</a> - <a href="https://sites.google.com/a/gug.cz/www2/rhok-2012">2012</a></p>-2015
+
+        <p>
+            #{set revisionNumber: play.Play.configuration.getProperty("build.revision.number")[0..7] /}
+            Build: <a href="https://github.com/michalbcz/kontaktynaurady/commit/#{get 'revisionNumber' /}">#{get 'revisionNumber' /}</a>
+            &copy; <a href="https://twitter.com/michalb_cz">Michal Bernhard</a> & <a href="https://github.com/vlastimil-dolejs">Vlastimil Dolejš</a> - <a href="https://sites.google.com/a/gug.cz/www2/rhok-2012">2012</a>-2015
+        </p>
       </footer>
 
     </div> <!-- /container -->
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-<!--     <script src="../assets/js/jquery.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-transition.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-alert.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-modal.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-dropdown.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-scrollspy.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-tab.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-tooltip.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-popover.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-button.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-collapse.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-carousel.js"></script> -->
-<!--     <script src="../assets/js/bootstrap-typeahead.js"></script> -->
 
   </body>
 </html>
