@@ -7,7 +7,7 @@ import play.jobs.On;
 import play.jobs.OnApplicationStart;
 
 
-@OnApplicationStart
+@OnApplicationStart(async = true)
 @On("0 0 6 * * ?") /* each day in 6:00 - just when we are sure that scraping of all data is done */
 public class CacheWarmupJob extends Job {
 
