@@ -15,5 +15,6 @@ public class CacheWarmupJob extends Job {
     public void doJob() throws Exception {
         Logger.info("Refreshing CSV dump cache...");
         OrganizationsService.refreshCacheForCsvDump();
+        Logger.info("CSV dump cache refreshed");
     }
 }
