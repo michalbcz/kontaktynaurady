@@ -198,7 +198,7 @@
       <footer>
 
         <p>
-            #{set revisionNumber: play.Play.configuration.getProperty("build.revision.number")[0..7] /}
+            #{set revisionNumber: play.Play.configuration.getProperty("build.revision.number")[0..6] /}
             Build: <a href="https://github.com/michalbcz/kontaktynaurady/commit/#{get 'revisionNumber' /}">#{get 'revisionNumber' /}</a>
             &copy; <a href="https://twitter.com/michalb_cz">Michal Bernhard</a> & <a href="https://github.com/vlastimil-dolejs">Vlastimil Dolejš</a> - <a href="https://sites.google.com/a/gug.cz/www2/rhok-2012">2012</a>-2015
         </p>
