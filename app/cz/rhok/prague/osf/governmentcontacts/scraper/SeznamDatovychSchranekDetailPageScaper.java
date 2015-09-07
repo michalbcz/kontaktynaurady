@@ -166,6 +166,9 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		organization.code = scrappedData.get("Kód organizace");
 		organization.type = scrappedData.get("Typ instituce");
 		organization.www = scrappedData.get("WWW");
+		String[] longitudeAndLatitude = doc.select("#gps span").text().split(",");
+		organization.latitude = Double.valueOf(longitudeAndLatitude[0]);
+		organization.longitude = Double.valueOf(longitudeAndLatitude[1]);
 
 		String textIncludingEmail = scrappedData.get("E-mail"); // eg. posta@cityofprague.cz (podatelna)
 
@@ -521,21 +524,4 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		return address;
 	}
 	
-//	private String parseEmail(String textIncludingEmail, String logMessageContext) {
-//
-//		// extract only mail part from string if there are something else
-//		String email = "";
-//
-//		if (textIncludingEmail != null) {
-//			Matcher matcher = MAIL_REGEX_PATTERN.matcher(textIncludingEmail);
-//			if (matcher.find()) {
-//				email = matcher.group(0);
-//			} else {
-//				log.error("Unable to parse e-mail. Parsed text : " + textIncludingEmail	 + " " + logMessageContext);
-//			}
-//		}
-//
-//		return email;
-//	}
-
 }
