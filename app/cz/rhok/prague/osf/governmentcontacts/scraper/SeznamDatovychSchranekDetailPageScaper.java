@@ -48,7 +48,6 @@ public class SeznamDatovychSchranekDetailPageScaper {
 	 * @return 
 	 */
 	public Organization scrape(String detailPageUrl) {
-		
 		log.info("Start scraping data from municipality page: " + detailPageUrl);
 
 		StopWatch stopWatch = new StopWatch();
@@ -66,16 +65,14 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		
 		stopWatch.stop();
 
-		log.info("Scraping of " + detailPageUrl + "and other details pages was succesfully done in: " + stopWatch.toString()  );
+		log.info("Scraping of " + detailPageUrl + "and other details pages was succesfully done in: " + stopWatch.toString());
 		String logMessageContext = "(" + detailPageUrl + ")";
 		logMissingFields(organization, logMessageContext);
 		
 		return organization;
-		
 	}
 
 	private List<Person> scrapeContactPersonsPage(String page) {
-
 		log.debug("Start scraping contact persons data from page: " + page);
 
 		StopWatch stopWatch = new StopWatch();
@@ -86,18 +83,15 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		Organization organization = new Organization();
 
 		List<String> contactPersonDetailPageUris = scrapePersonDetailPageUris(doc);
-
 		List<Person> persons = Lists.newArrayList();
 
 		for (String personDetailPageUri : contactPersonDetailPageUris) {
-
 			try {
 				Person person = scrapePersonDetailPage(personDetailPageUri);
 				persons.add(person);
 			} catch (Exception e) {
 				log.error("Cannot parse contact person detail page (" + personDetailPageUri + "). Skipping it...", e);
 			}
-
 		}
 
 		stopWatch.stop();
@@ -105,7 +99,6 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		log.debug("Scraping of person detail: " + page + "done in: " + stopWatch.toString()  );
 
 		return persons;
-
 	}
 
 	private Person scrapePersonDetailPage(String personDetailPageUri) {
@@ -129,18 +122,13 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		person.telefon = pageData.get("Telefony");
 
 		return person;
-
 	}
 
 	private List<String> scrapePersonDetailPageUris(Document doc) {
-
 		//FIXME: michalb_cz kdyz je kontaktnich osob hodne, tak je tam strankovani - projit vsechny stranky!
-
-
 		List<String> uris = Lists.newArrayList();
 
 		Elements links = doc.select(".content tr a");
-
 		for(Element link : links) {
 			uris.add(link.absUrl("href"));
 		}
@@ -163,6 +151,7 @@ public class SeznamDatovychSchranekDetailPageScaper {
 
 		organization.taxId = scrappedData.get("DIČ");
 		organization.bankAccount = scrappedData.get("Bankovní spojení");
+
 		organization.code = scrappedData.get("Kód organizace");
 		organization.type = scrappedData.get("Typ instituce");
 		organization.www = scrappedData.get("WWW");
@@ -173,17 +162,13 @@ public class SeznamDatovychSchranekDetailPageScaper {
 		String textIncludingEmail = scrappedData.get("E-mail"); // eg. posta@cityofprague.cz (podatelna)
 
 		if (StringUtils.isNotBlank(textIncludingEmail)) {
-
 			Email scrapedEmail = parseEmail(textIncludingEmail);
 			organization.email = scrapedEmail.uri;
 			organization.emailDescription = scrapedEmail.description;
-
 		}
-
 
 		/* pole "Úřadovny" v sobe obsahuje radu dalsich informaci jako je email (ktery je casto
 		* narozdil od pole E-mail vyplnen), telefonni cislo, uredni hodiny */
-
 		List<Email> extractedEmails = extractEmailsFromUradovnyHtml(doc.select(".offices .officeFirst"));
 		fillEmails(organization, extractedEmails);
 
@@ -426,6 +411,10 @@ public class SeznamDatovychSchranekDetailPageScaper {
 				value = value.replace("<br />", "\n");
 				value = value.replace("<br/>", "\n");
 				value = value.replaceAll("<span class=\"incompleteAddress\">.*</span>", "");
+			}
+			else if ("Bankovní spojení".equals(label)) {
+				value = dataRow.select("td").text();
+				value = value.replace(dataRow.select(".accountDescription").text(), ""); // remove potential accoutnDescription text from bankAccount text
 			}
 			else if (!dataRow.select("a").isEmpty() /* it's a link */) {
 				String hrefAttr = dataRow.select("a").attr("href");
