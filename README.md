@@ -11,7 +11,7 @@ Informace se ziskavaji prochazenim a dolovanim dat z registru datovych schranek
 Instalace
 ---------
 
-1. nainstalujte play 1.3 (ma podporu Java8) framework (https://www.playframework.com/documentation/1.3.x/install)
+1. nainstalujte play 1.4 (ma podporu Java8) framework (https://www.playframework.com/documentation/1.4.x/install)
 2. spuste na prikazove radce prikaz "play dependencies" (stahne vsechny zavislosti, vytvori adresare libs a 
 modules)
 3. spuste na prikazove radce prikaz "play eclipsify" pro vytvoreni projektovych souboru pro 
