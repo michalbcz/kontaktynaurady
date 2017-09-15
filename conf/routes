@@ -24,7 +24,6 @@ GET     /sample-map		                        SampleMap.map
 GET     /admin/testbed/?                        TestBed.index
 POST    /admin/testbed/scrapeDetailPage         TestBed.scrapeDetailPage
 POST    /admin/testbed/kraj_scrape              TestBed.startScrapeJob
-POST    /admin/testbed/geocoding                TestBed.startGeocodingJob
 POST    /admin/testbed/evaluateGroovyScript     TestBed.evaluateGroovyScript
 
 # GET    /admin/organizations/show               Organizations.show

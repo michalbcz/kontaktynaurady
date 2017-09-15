@@ -1,17 +1,13 @@
 package controllers;
 
 import cz.rhok.prague.osf.governmentcontacts.helper.OrganizationHelper;
+import cz.rhok.prague.osf.governmentcontacts.scraper.SeznamDatovychSchranekDetailPageScaper;
 import groovy.lang.GroovyShell;
-import jobs.GeocodingJob;
 import jobs.KrajeScraperJob;
 import models.Organization;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
-
 import play.mvc.Controller;
 import play.mvc.With;
-import cz.rhok.prague.osf.governmentcontacts.scraper.SeznamDatovychSchranekDetailPageScaper;
-import cz.rhok.prague.osf.governmentcontacts.scraper.SeznamDatovychSchranekMunicipalityListPageScraper;
 
 @With(Secure.class)
 public class TestBed extends Controller {
@@ -35,10 +31,6 @@ public class TestBed extends Controller {
 		flash.put("message", "scraping job started");
 		index();
 	}    
-
-	public static void startGeocodingJob() {
-		new GeocodingJob().now();
-	}
 
 	public static void evaluateGroovyScript(String script) {
 
