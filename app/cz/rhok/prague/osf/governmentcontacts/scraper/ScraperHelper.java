@@ -1,13 +1,12 @@
 package cz.rhok.prague.osf.governmentcontacts.scraper;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-
-import org.apache.log4j.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 public abstract class ScraperHelper {
 
@@ -20,7 +19,7 @@ public abstract class ScraperHelper {
 		Document doc;
 		
 		try {
-			doc = Jsoup.connect(url.toExternalForm()).get();
+			doc = Jsoup.connect(url.toExternalForm()).timeout(10 * 1000).get();
 			return doc;
 		} catch (IOException ex) {
 			
