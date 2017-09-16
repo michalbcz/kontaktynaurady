@@ -12,9 +12,20 @@ export default class ResultRow extends React.Component {
         this.state = { 
             reviewScore: null,    
             reviews: [],
-            googleMapsUrl: null        
+            googleMapsUrl: null,
+            mailToText: this.createMailToText(this.props.searchResult.email)        
         }
 
+    }
+
+    createMailToText(email) {
+        let body = `
+        Dobrý den,
+
+           děkuji za skvělou práci, kterou odvádíte.  
+
+        `;
+        return encodeURI(`mailto:${email}?subject=Poděkování&body=${body}`)
     }
 
     componentDidMount() {
@@ -97,13 +108,17 @@ export default class ResultRow extends React.Component {
     render() {
         return (
             <tr>
-                <th scope="header">{this.props.searchResult.name}</th>
+                <th className="name" scope="header">{this.props.searchResult.name}</th>
                 <td className="review"><GooglePlacesReview urlOfReview={this.state.googleMapsUrl} reviewScore={this.state.reviewScore}/></td>
                 <td className="wordCloud"><TagCloud 
                         minSize={10}
                         maxSize={20}
                         tags={this.getData()}/></td>
-                <td>[hejtmail]</td>
+                <td> 
+                    <a href={this.state.mailToText} target="_blank" data-original-title="Tooltip on top">
+                        <i className="fa fa-envelope"></i>
+                    </a>
+                </td>
             </tr>
         );
     }
