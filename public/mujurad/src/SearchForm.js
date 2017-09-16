@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
+const KONTAKTY_API_URL = "http://localhost:8080"
+
 export default class SearchForm extends React.Component {
     constructor(props) {
         super(props);
@@ -26,7 +28,7 @@ export default class SearchForm extends React.Component {
                       <i className="fa fa-search fa-lg" aria-hidden="true"></i>
                     </button>
                   </div>
-                </div>
+                </div>  
               </form>
             </div>
           </div>
@@ -40,7 +42,7 @@ export default class SearchForm extends React.Component {
     search = (e) => {
         e.preventDefault();
         var self = this;
-        axios.get(`http://localhost:8080/api/v1/organizations?name=*${this.state.searchText}*`)
+        axios.get(`${KONTAKTY_API_URL}/api/v1/organizations?name=*${this.state.searchText}*`)
           .then(function(response) {
             self.props.onSearchResultsChanged(response.data)
           })

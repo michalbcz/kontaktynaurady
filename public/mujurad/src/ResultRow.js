@@ -10,7 +10,9 @@ export default class ResultRow extends React.Component {
     constructor(props) {
         super(props);
         this.state = { 
-            reviewScore: null            
+            reviewScore: null,    
+            reviews: [],
+            googleMapsUrl: null        
         }
 
     }
@@ -63,12 +65,45 @@ export default class ResultRow extends React.Component {
         })
     }
 
+    getData() {
+        return this.count(this.flatten(this.state.reviews.map((review) => {
+            let text = review.text;
+            text = text.replace(/[.,?!\(\)\[\]\-=]/, ""); // remove all word/sentences characters
+            text = text.toLowerCase();
+            return text.split(/\s/).filter((t) => t.trim() != "")
+        }))).filter((tuple) => tuple.count > 2);
+    }
+
+    flatten(list) { 
+         return list.reduce((a, b) => a.concat(Array.isArray(b) ? this.flatten(b) : b), [])
+    };
+
+    count(names) {
+        // Count occurrences using a map (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
+        let map = new Map();
+        for (let name of names) {
+            map.set(name, (map.get(name) || 0) + 1);
+        }
+
+        // Transform to array of { name, count }
+        let result = [];
+        for (let [name, count] of map) {
+            result.push({value: name, count: count});
+        }
+
+        return result;
+    }
+
     render() {
         return (
             <tr>
                 <td>{this.props.searchResult.name}</td>
                 <td><GooglePlacesReview urlOfReview={this.state.googleMapsUrl} reviewScore={this.state.reviewScore}/></td>
-                <td>[word cloud]</td>
+                <td><TagCloud 
+                        minSize={10}
+                        maxSize={20}
+                        tags={this.getData()}
+                        onClick={tag => alert(`'${tag.value}' was selected!`)} /></td>
                 <td>[hejtmail]</td>
             </tr>
         );
