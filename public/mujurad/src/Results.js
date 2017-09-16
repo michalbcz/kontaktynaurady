@@ -3,15 +3,15 @@ import ResultRow from './ResultRow';
 
 export default class Results extends React.Component {
     render() {
-        if (this.props.searchResults === undefined) {
+        if (this.props.searchResults === null) {
             // initial state - search was not performed yet
             return null;
         }
 
         let rows;
-        if (this.props.searchResults) {
+        if (this.props.searchResults.length > 0) {
             rows = this.props.searchResults.map((searchResult) => {
-                <ResultRow key={searchResult.name} searchResult={searchResult}  />
+                return <ResultRow key={searchResult.name} searchResult={searchResult}  />
             });
         } else {
             // search was performed but with no results

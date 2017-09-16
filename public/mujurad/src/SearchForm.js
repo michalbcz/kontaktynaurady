@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 
 export default class SearchForm extends React.Component {
     constructor(props) {
@@ -33,10 +34,18 @@ export default class SearchForm extends React.Component {
     }
 
     searchTextChange = (e) => {
-        this.setState({searchText: e.target.value});
+        this.setState({ searchText: e.target.value });
     }    
 
     search = (e) => {
-        // alert("Search for " + this.state.searchText);
+        e.preventDefault();
+        var self = this;
+        axios.get(`http://localhost:8080/api/v1/organizations?name=*${this.state.searchText}*`)
+          .then(function(response) {
+            self.props.onSearchResultsChanged(response.data)
+          })
+          .catch(function(error) {
+            console.error(error)
+          })    
     }
 }

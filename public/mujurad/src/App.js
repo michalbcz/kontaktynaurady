@@ -8,18 +8,22 @@ class App extends Component {
 
    constructor(props) {
     super(props);
-    this.state = {name: props.name};
+    this.state = { searchResults: null }
   }
 
   componentDidMount() {
-    this.setState({ name: 'Michal'})
+    
+  }
+
+  onSearchResultsChanged = (data) => {
+    this.setState({ searchResults: data })
   }
 
   render() {
     return (
       <div className="container">
-        <SearchForm />
-        <Results />
+        <SearchForm onSearchResultsChanged={ this.onSearchResultsChanged } />
+        <Results searchResults = { this.state.searchResults } />
       </div>
     );
   }
