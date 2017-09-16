@@ -82,7 +82,7 @@ export default class ResultRow extends React.Component {
             text = text.replace(/[.,?!\(\)\[\]\-=]/, ""); // remove all word/sentences characters
             text = text.toLowerCase();
             return text.split(/\s/).filter((t) => t.trim() != "")
-        }))).filter((tuple) => tuple.count > 1);
+        }))).filter((tuple) => tuple.count >= 1);
     }
 
     flatten(list) { 
