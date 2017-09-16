@@ -3,38 +3,27 @@
  */
 package controllers;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.function.Predicate;
-
-import javax.persistence.Query;
-
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.GsonBuilder;
-import cz.rhok.prague.osf.governmentcontacts.service.OrganizationsService;
-import models.Organization;
-
-import models.Person;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-
-import play.cache.Cache;
-import play.cache.CacheFor;
-import play.db.jpa.JPA;
-import play.db.jpa.JPABase;
-import play.mvc.Controller;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import cz.rhok.prague.osf.governmentcontacts.service.OrganizationsService;
+import models.Organization;
+import org.apache.commons.lang.StringUtils;
+import play.db.jpa.JPA;
+
+import javax.persistence.Query;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * @author Vlastimil Dolejs (vlasta.dolejs@gmail.com)
  *
  */
-public class OrganizationsRest extends Controller {
+public class OrganizationsRest extends RestController {
 
 	private static final Gson gson =
 								new GsonBuilder().setPrettyPrinting()
