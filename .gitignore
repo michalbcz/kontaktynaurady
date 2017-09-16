@@ -15,3 +15,5 @@ tmp/*
 
 # development runner script
 run.bat
+
+/target
