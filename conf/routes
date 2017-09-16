@@ -7,6 +7,8 @@ GET     /favicon.ico                            404
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/                                staticDir:public
+GET     /mujurad                                staticFile:public/mujurad/build/index.html
+GET     /static/                                staticDir:public/mujurad/build/static
 
 # Root
 GET     /                                          OrganizationsRest.help
