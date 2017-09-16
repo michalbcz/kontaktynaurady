@@ -41,11 +41,15 @@ public abstract class ScraperHelper {
 	}
 
 	public static String convertFromDetailToAdditionalDetailPage(String detailPageUrl) {
-		return detailPageUrl.replace("municipalityDetail.do", "municipalityAdditionDetail.do");
+		return detailPageUrl
+					.replace("municipalityDetail.do", "municipalityAdditionDetail.do")
+					.replace("urbanNeighbourhoodsDetail.do", "subjectAdditionDetail.do");
 	}
 
 	public static String convertFromDetailToContactPersonsPage(String detailPageUrl) {
-		return detailPageUrl.replace("municipalityDetail.do", "contactPersonList.do");
+		return detailPageUrl
+				.replace("municipalityDetail.do", "contactPersonList.do")
+				.replace("urbanNeighbourhoodsDetail.do", "contactPersonList.do");
 	}
 
 
