@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-const KONTAKTY_API_URL = "http://localhost:8080"
+const KONTAKTY_API_URL = "/../../.."
 
 export default class SearchForm extends React.Component {
     constructor(props) {
