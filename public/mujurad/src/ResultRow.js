@@ -71,7 +71,7 @@ export default class ResultRow extends React.Component {
             text = text.replace(/[.,?!\(\)\[\]\-=]/, ""); // remove all word/sentences characters
             text = text.toLowerCase();
             return text.split(/\s/).filter((t) => t.trim() != "")
-        }))).filter((tuple) => tuple.count > 2);
+        }))).filter((tuple) => tuple.count > 1);
     }
 
     flatten(list) { 
@@ -97,13 +97,12 @@ export default class ResultRow extends React.Component {
     render() {
         return (
             <tr>
-                <td>{this.props.searchResult.name}</td>
-                <td><GooglePlacesReview urlOfReview={this.state.googleMapsUrl} reviewScore={this.state.reviewScore}/></td>
-                <td><TagCloud 
+                <th scope="header">{this.props.searchResult.name}</th>
+                <td className="review"><GooglePlacesReview urlOfReview={this.state.googleMapsUrl} reviewScore={this.state.reviewScore}/></td>
+                <td className="wordCloud"><TagCloud 
                         minSize={10}
                         maxSize={20}
-                        tags={this.getData()}
-                        onClick={tag => alert(`'${tag.value}' was selected!`)} /></td>
+                        tags={this.getData()}/></td>
                 <td>[hejtmail]</td>
             </tr>
         );
